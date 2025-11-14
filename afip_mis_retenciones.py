@@ -15,6 +15,7 @@ UI: Tkinter (login CUIT, clave, CUIT target, tax type, dates + Start button)
 """
 
 import asyncio
+import json
 import logging
 import os
 import re
@@ -23,10 +24,10 @@ import tempfile
 import threading
 import time
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Tuple, Dict
+from typing import Optional, Tuple, Dict, List
 
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -142,6 +143,69 @@ def validar_rango_fecha(fecha_desde: str, fecha_hasta: str) -> Tuple[bool, str]:
 
 def now_ts() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# ---------------- Checkpoint System ---------------- #
+
+@dataclass
+class BatchProgress:
+    """Estado del procesamiento batch."""
+    session_id: str
+    cuit_login: str
+    cuit_target: str
+    fecha_desde: str
+    fecha_hasta: str
+    started_at: str
+    completed_tax_codes: List[str]
+    current_tax_code: Optional[str]
+    all_downloaded_files: List[str]
+    status: str  # "in_progress", "completed", "error"
+    last_updated: str
+
+def get_checkpoint_path(session_id: str) -> Path:
+    """Get the path to the checkpoint file."""
+    return OUTPUT_DIR / f"checkpoint_{session_id}.json"
+
+def save_checkpoint(progress: BatchProgress) -> None:
+    """Save progress to JSON checkpoint file."""
+    progress.last_updated = now_ts()
+    checkpoint_path = get_checkpoint_path(progress.session_id)
+
+    with open(checkpoint_path, 'w', encoding='utf-8') as f:
+        json.dump(asdict(progress), f, indent=2, ensure_ascii=False)
+
+def load_checkpoint(session_id: str) -> Optional[BatchProgress]:
+    """Load progress from JSON checkpoint file."""
+    checkpoint_path = get_checkpoint_path(session_id)
+
+    if not checkpoint_path.exists():
+        return None
+
+    try:
+        with open(checkpoint_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return BatchProgress(**data)
+    except Exception as e:
+        logger.error(f"Error loading checkpoint: {e}")
+        return None
+
+def find_latest_checkpoint() -> Optional[BatchProgress]:
+    """Find the most recent checkpoint file."""
+    checkpoint_files = list(OUTPUT_DIR.glob("checkpoint_*.json"))
+
+    if not checkpoint_files:
+        return None
+
+    # Sort by modification time, most recent first
+    checkpoint_files.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+
+    # Load the most recent checkpoint that's in_progress
+    for checkpoint_file in checkpoint_files:
+        session_id = checkpoint_file.stem.replace("checkpoint_", "")
+        progress = load_checkpoint(session_id)
+        if progress and progress.status == "in_progress":
+            return progress
+
+    return None
 
 # ---------------- Scraper Core ---------------- #
 
@@ -646,6 +710,222 @@ async def scrape_mis_retenciones(
         except Exception as e:
             logger.warning(f"No se pudo eliminar perfil temporal: {e}")
 
+async def _navigate_to_nueva_consulta(page, on_log=print):
+    """Navigate back to 'Nueva consulta' tab after processing."""
+    try:
+        on_log("Navegando a 'Nueva consulta'...")
+        nueva_consulta_tab = page.locator("button#tabNuevaConsulta-tab, button[aria-controls='tabNuevaConsulta']").first
+        await nueva_consulta_tab.wait_for(state="visible", timeout=10000)
+        await nueva_consulta_tab.click()
+        await asyncio.sleep(2)
+        on_log("✓ Navegado a 'Nueva consulta'")
+    except Exception as e:
+        on_log(f"⚠ Error al navegar a 'Nueva consulta': {e}")
+
+async def scrape_mis_retenciones_batch(
+    cuit_login: str,
+    clave: str,
+    cuit_target: str,
+    fecha_desde: str,
+    fecha_hasta: str,
+    resume_session_id: Optional[str] = None,
+    on_log=print
+):
+    """Batch scraper that processes all 14 tax types automatically.
+
+    Args:
+        cuit_login: CUIT para login
+        clave: Contraseña
+        cuit_target: CUIT objetivo (representado)
+        fecha_desde: Fecha desde en formato dd/mm/yyyy
+        fecha_hasta: Fecha hasta en formato dd/mm/yyyy
+        resume_session_id: Optional session ID to resume from checkpoint
+    """
+    # Validate date range
+    es_valido, mensaje = validar_rango_fecha(fecha_desde, fecha_hasta)
+    if not es_valido:
+        on_log(f"❌ Error de validación: {mensaje}")
+        raise ValueError(mensaje)
+
+    # Check if resuming from checkpoint
+    progress = None
+    if resume_session_id:
+        progress = load_checkpoint(resume_session_id)
+        if progress:
+            on_log(f"📂 Reanudando desde checkpoint: {resume_session_id}")
+            on_log(f"Completados: {len(progress.completed_tax_codes)}/{len(TAX_TYPES)}")
+        else:
+            on_log(f"⚠ No se encontró checkpoint para: {resume_session_id}")
+
+    # Create new progress if not resuming
+    if not progress:
+        session_id = uuid.uuid4().hex[:12]
+        progress = BatchProgress(
+            session_id=session_id,
+            cuit_login=cuit_login,
+            cuit_target=cuit_target,
+            fecha_desde=fecha_desde,
+            fecha_hasta=fecha_hasta,
+            started_at=now_ts(),
+            completed_tax_codes=[],
+            current_tax_code=None,
+            all_downloaded_files=[],
+            status="in_progress",
+            last_updated=now_ts()
+        )
+        save_checkpoint(progress)
+        on_log(f"🆕 Nueva sesión batch: {session_id}")
+
+    on_log("")
+    on_log("=" * 70)
+    on_log(f"MODO BATCH: Procesando {len(TAX_TYPES)} tipos de impuestos")
+    on_log("=" * 70)
+    on_log("")
+
+    on_log("Iniciando navegador...")
+    temp_profile = Path(tempfile.gettempdir()) / f"studioai_mr_batch_{progress.session_id}"
+    temp_profile.mkdir(parents=True, exist_ok=True)
+    temp_dir = str(temp_profile)
+
+    try:
+        async with async_playwright() as pw:
+            context = await pw.chromium.launch_persistent_context(
+                user_data_dir=temp_dir,
+                headless=False,
+                accept_downloads=True
+            )
+            for p in context.pages:
+                await _apply_viewport(p)
+
+            # Login
+            portal = await _afip_login(context, cuit_login, clave, on_log=on_log)
+
+            # Open MIS RETENCIONES
+            mr_page = await _open_mis_retenciones(context, portal, on_log=on_log)
+
+            # Select CUIT target (representado)
+            await _select_cuit_representado(mr_page, cuit_target, on_log=on_log)
+
+            # Process each tax type
+            for idx, tax_config in enumerate(TAX_TYPES, 1):
+                # Skip if already completed
+                if tax_config.code in progress.completed_tax_codes:
+                    on_log(f"⏭️  [{idx}/{len(TAX_TYPES)}] Saltando {tax_config.name} (ya completado)")
+                    continue
+
+                on_log("")
+                on_log("=" * 70)
+                on_log(f"📋 [{idx}/{len(TAX_TYPES)}] PROCESANDO: {tax_config.name}")
+                on_log(f"Categoría: {tax_config.category}")
+                on_log(f"Modo: {tax_config.operation_mode}")
+                on_log("=" * 70)
+
+                # Update current tax in progress
+                progress.current_tax_code = tax_config.code
+                save_checkpoint(progress)
+
+                # Determine operation type(s) based on tax configuration
+                operations_to_run = []
+
+                if tax_config.operation_mode == "retencion":
+                    operations_to_run = [("1", "Retención")]
+                elif tax_config.operation_mode == "percepcion":
+                    operations_to_run = [("2", "Percepción")]
+                elif tax_config.operation_mode == "ambas":
+                    operations_to_run = [("0", "Retención y percepción")]
+                elif tax_config.operation_mode == "ambas_separadas":
+                    # Do 2 separate queries: first retención, then percepción
+                    operations_to_run = [("1", "Retención"), ("2", "Percepción")]
+                elif tax_config.operation_mode == "fecha_solo":
+                    # No operation type field for aduaneras
+                    operations_to_run = [(None, "Solo fecha")]
+
+                # Process each operation for this tax type
+                for op_value, op_name in operations_to_run:
+                    on_log(f"  → {op_name}")
+
+                    try:
+                        # Fill the form
+                        await _fill_consulta_form(mr_page, tax_config.code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
+
+                        # Click Consultar
+                        await _click_consultar(mr_page, on_log=on_log)
+
+                        # Export to CSV
+                        await _export_csv(mr_page, on_log=on_log)
+
+                        # Handle popup and navigate to "Consultas exportadas"
+                        await _handle_export_popup(mr_page, on_log=on_log)
+
+                        # Wait for file and download
+                        file_path = await _wait_and_download_file(
+                            mr_page, tax_config.code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
+                        )
+
+                        progress.all_downloaded_files.append(file_path)
+                        save_checkpoint(progress)
+
+                        on_log(f"  ✓ {op_name} completado")
+
+                        # Navigate back to "Nueva consulta" for next operation/tax type
+                        if op_value != operations_to_run[-1][0] or idx < len(TAX_TYPES):
+                            await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
+
+                    except Exception as e:
+                        on_log(f"  ❌ Error en {op_name}: {e}")
+                        # Continue with next operation
+                        try:
+                            await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
+                        except:
+                            pass
+
+                # Mark this tax type as completed
+                progress.completed_tax_codes.append(tax_config.code)
+                progress.current_tax_code = None
+                save_checkpoint(progress)
+
+                on_log(f"✅ [{idx}/{len(TAX_TYPES)}] {tax_config.name} COMPLETADO")
+                on_log(f"Progreso general: {len(progress.completed_tax_codes)}/{len(TAX_TYPES)}")
+
+            # All completed
+            progress.status = "completed"
+            save_checkpoint(progress)
+
+            on_log("")
+            on_log("=" * 70)
+            on_log("🎉 BATCH PROCESS COMPLETADO 🎉")
+            on_log("=" * 70)
+            on_log(f"Total de archivos descargados: {len(progress.all_downloaded_files)}")
+            on_log(f"Tipos de impuestos procesados: {len(progress.completed_tax_codes)}")
+            on_log("")
+            on_log("Archivos:")
+            for idx, file_path in enumerate(progress.all_downloaded_files, 1):
+                on_log(f"  {idx}. {file_path}")
+
+            return {
+                "session_id": progress.session_id,
+                "files": progress.all_downloaded_files,
+                "completed_count": len(progress.completed_tax_codes),
+                "total_count": len(TAX_TYPES)
+            }
+
+    except Exception as e:
+        progress.status = "error"
+        save_checkpoint(progress)
+        on_log(f"❌ Error en batch process: {e}")
+        raise
+
+    finally:
+        try:
+            if progress.status == "completed":
+                # Clean up temp profile only if completed successfully
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                logger.info(f"Perfil temporal eliminado: {temp_dir}")
+            else:
+                on_log(f"⚠ Perfil temporal conservado para posible reanudación: {temp_dir}")
+        except Exception as e:
+            logger.warning(f"No se pudo eliminar perfil temporal: {e}")
+
 # ---------------- Tkinter GUI ---------------- #
 
 class App(tk.Tk):
@@ -701,16 +981,34 @@ class App(tk.Tk):
         fecha_hasta_default = datetime.now().strftime(DATE_FMT)
         self.e_fecha_hasta.insert(0, fecha_hasta_default)
 
+        # Batch mode checkbox
+        self.batch_mode_var = tk.BooleanVar(value=False)
+        self.batch_checkbox = ttk.Checkbutton(
+            frm,
+            text="Procesar TODOS los tipos de impuestos (Modo Batch)",
+            variable=self.batch_mode_var,
+            command=self.on_batch_mode_changed
+        )
+        self.batch_checkbox.grid(row=6, column=0, columnspan=3, sticky="w", padx=8, pady=(10, 6))
+
         # Start button
         self.btn = ttk.Button(frm, text="Iniciar", command=self.on_start)
-        self.btn.grid(row=6, column=0, columnspan=3, sticky="ew", padx=8, pady=(10, 6))
+        self.btn.grid(row=7, column=0, columnspan=2, sticky="ew", padx=8, pady=6)
+
+        # Resume button
+        self.btn_resume = ttk.Button(frm, text="Reanudar última sesión", command=self.on_resume)
+        self.btn_resume.grid(row=7, column=2, sticky="ew", padx=8, pady=6)
+        self.btn_resume.config(state="disabled")  # Disabled by default
+
+        # Check if there's a checkpoint to resume
+        self.check_for_checkpoint()
 
         # Log area
-        ttk.Label(frm, text="Log:").grid(row=7, column=0, columnspan=3, sticky="w")
+        ttk.Label(frm, text="Log:").grid(row=8, column=0, columnspan=3, sticky="w")
         self.log = tk.Text(frm, height=16, width=80, state="disabled", wrap="word")
-        self.log.grid(row=8, column=0, columnspan=3, padx=8, pady=6)
+        self.log.grid(row=9, column=0, columnspan=3, padx=8, pady=6)
         scroll = ttk.Scrollbar(frm, command=self.log.yview)
-        scroll.grid(row=8, column=3, sticky="ns")
+        scroll.grid(row=9, column=3, sticky="ns")
         self.log.config(yscrollcommand=scroll.set)
 
     def log_line(self, msg: str):
@@ -721,13 +1019,70 @@ class App(tk.Tk):
         self.log.configure(state="disabled")
         self.update_idletasks()
 
-    def validate(self) -> Optional[Tuple[str, str, str, str, str, str]]:
+    def on_batch_mode_changed(self):
+        """Handle batch mode checkbox change."""
+        if self.batch_mode_var.get():
+            # Batch mode: disable tax type dropdown
+            self.tax_combo.config(state="disabled")
+            self.log_line("Modo Batch activado: Se procesarán todos los tipos de impuestos")
+        else:
+            # Single mode: enable tax type dropdown
+            self.tax_combo.config(state="readonly")
+            self.log_line("Modo Single activado: Seleccione un tipo de impuesto")
+
+    def check_for_checkpoint(self):
+        """Check if there's a checkpoint file to resume from."""
+        latest = find_latest_checkpoint()
+        if latest:
+            self.btn_resume.config(state="normal")
+            self.log_line(f"Sesión interrumpida encontrada: {latest.session_id}")
+            self.log_line(f"Progreso: {len(latest.completed_tax_codes)}/{len(TAX_TYPES)} completados")
+        else:
+            self.btn_resume.config(state="disabled")
+
+    def on_resume(self):
+        """Resume from the latest checkpoint."""
+        latest = find_latest_checkpoint()
+        if not latest:
+            messagebox.showerror("Error", "No se encontró ninguna sesión para reanudar.")
+            return
+
+        # Populate fields from checkpoint
+        self.e_cuit.delete(0, tk.END)
+        self.e_cuit.insert(0, latest.cuit_login)
+
+        self.e_cuit_target.delete(0, tk.END)
+        self.e_cuit_target.insert(0, latest.cuit_target)
+
+        self.e_fecha_desde.delete(0, tk.END)
+        self.e_fecha_desde.insert(0, latest.fecha_desde)
+
+        self.e_fecha_hasta.delete(0, tk.END)
+        self.e_fecha_hasta.insert(0, latest.fecha_hasta)
+
+        # Enable batch mode (resume is always batch)
+        self.batch_mode_var.set(True)
+        self.on_batch_mode_changed()
+
+        # Ask for confirmation
+        confirm = messagebox.askyesno(
+            "Reanudar sesión",
+            f"Se reanudará la sesión {latest.session_id}\n\n"
+            f"Iniciada: {latest.started_at}\n"
+            f"Progreso: {len(latest.completed_tax_codes)}/{len(TAX_TYPES)} completados\n\n"
+            f"¿Continuar?"
+        )
+
+        if confirm:
+            self.log_line(f"Reanudando sesión: {latest.session_id}")
+            self.start_batch_worker(resume_session_id=latest.session_id)
+
+    def validate(self) -> Optional[Tuple[str, str, str, Optional[str], str, str]]:
         cuit = self.e_cuit.get().strip()
         clave = self.e_clave.get().strip()
         cuit_target = self.e_cuit_target.get().strip()
         fecha_desde = self.e_fecha_desde.get().strip()
         fecha_hasta = self.e_fecha_hasta.get().strip()
-        tax_selection = self.tax_var.get().strip()
 
         if not validar_cuit(cuit):
             messagebox.showerror("Validación",
@@ -740,28 +1095,32 @@ class App(tk.Tk):
         if not clave:
             messagebox.showerror("Validación", "La clave no puede estar vacía.")
             return None
-        if not tax_selection:
-            messagebox.showerror("Validación", "Debe seleccionar un tipo de impuesto.")
-            return None
-
-        # Extract tax code from selection
-        # Format: "217 - SICORE-IMPTO.A LAS GANANCIAS [Impositivas]"
-        # We need to find which TAX_TYPE matches this
-        tax_code = None
-        for tax in TAX_TYPES:
-            if f"{tax.name} [{tax.category}]" == tax_selection:
-                tax_code = tax.code
-                break
-
-        if not tax_code:
-            messagebox.showerror("Validación", "Error al identificar el tipo de impuesto.")
-            return None
 
         # Validate dates
         es_valido, mensaje = validar_rango_fecha(fecha_desde, fecha_hasta)
         if not es_valido:
             messagebox.showerror("Validación de Fechas", mensaje)
             return None
+
+        # If batch mode, tax_code is not required
+        tax_code = None
+        if not self.batch_mode_var.get():
+            tax_selection = self.tax_var.get().strip()
+            if not tax_selection:
+                messagebox.showerror("Validación", "Debe seleccionar un tipo de impuesto.")
+                return None
+
+            # Extract tax code from selection
+            # Format: "217 - SICORE-IMPTO.A LAS GANANCIAS [Impositivas]"
+            # We need to find which TAX_TYPE matches this
+            for tax in TAX_TYPES:
+                if f"{tax.name} [{tax.category}]" == tax_selection:
+                    tax_code = tax.code
+                    break
+
+            if not tax_code:
+                messagebox.showerror("Validación", "Error al identificar el tipo de impuesto.")
+                return None
 
         return cuit, clave, cuit_target, tax_code, fecha_desde, fecha_hasta
 
@@ -770,10 +1129,19 @@ class App(tk.Tk):
         if not data:
             return
 
-        self.btn.configure(state="disabled", text="Procesando...")
-        self.log_line("✓ Validación OK. Arrancando...")
-
         cuit, clave, cuit_target, tax_code, fecha_desde, fecha_hasta = data
+
+        # Check if batch mode
+        if self.batch_mode_var.get():
+            self.start_batch_worker()
+        else:
+            self.start_single_worker(cuit, clave, cuit_target, tax_code, fecha_desde, fecha_hasta)
+
+    def start_single_worker(self, cuit, clave, cuit_target, tax_code, fecha_desde, fecha_hasta):
+        """Start worker for single tax type processing."""
+        self.btn.configure(state="disabled", text="Procesando...")
+        self.btn_resume.configure(state="disabled")
+        self.log_line("✓ Validación OK. Arrancando modo single...")
 
         def worker():
             try:
@@ -800,6 +1168,67 @@ class App(tk.Tk):
                 self.after(0, lambda t=full_trace: self.log_line(f"ERROR COMPLETO:\n{t}"))
             finally:
                 self.after(0, lambda: self.btn.configure(state="normal", text="Iniciar"))
+                self.after(0, lambda: self.btn_resume.configure(state="normal"))
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def start_batch_worker(self, resume_session_id: Optional[str] = None):
+        """Start worker for batch processing all tax types."""
+        data = self.validate()
+        if not data:
+            return
+
+        cuit, clave, cuit_target, _, fecha_desde, fecha_hasta = data
+
+        self.btn.configure(state="disabled", text="Procesando Batch...")
+        self.btn_resume.configure(state="disabled")
+        self.batch_checkbox.configure(state="disabled")
+
+        if not resume_session_id:
+            self.log_line("✓ Validación OK. Arrancando modo batch...")
+        else:
+            self.log_line(f"✓ Reanudando sesión batch: {resume_session_id}")
+
+        def worker():
+            try:
+                def _on_log(msg):
+                    self.after(0, self.log_line, msg)
+
+                result = asyncio.run(scrape_mis_retenciones_batch(
+                    cuit, clave, cuit_target, fecha_desde, fecha_hasta,
+                    resume_session_id=resume_session_id,
+                    on_log=_on_log
+                ))
+
+                files_count = len(result['files'])
+                completed = result['completed_count']
+                total = result['total_count']
+
+                self.after(0, lambda: messagebox.showinfo(
+                    "Batch Completado",
+                    f"Proceso batch finalizado.\n\n"
+                    f"Tipos procesados: {completed}/{total}\n"
+                    f"Total archivos: {files_count}\n\n"
+                    f"Ver log para detalles."
+                ))
+
+                # Re-check for checkpoints
+                self.after(0, self.check_for_checkpoint)
+
+            except Exception as e:
+                err_msg = f"{e}"
+                import traceback
+                full_trace = traceback.format_exc()
+                self.after(0, lambda m=err_msg: messagebox.showerror("Error", m))
+                self.after(0, lambda t=full_trace: self.log_line(f"ERROR COMPLETO:\n{t}"))
+
+                # Re-check for checkpoints (in case of error, might be resumable)
+                self.after(0, self.check_for_checkpoint)
+
+            finally:
+                self.after(0, lambda: self.btn.configure(state="normal", text="Iniciar"))
+                self.after(0, lambda: self.batch_checkbox.configure(state="normal"))
+                self.after(0, lambda: self.btn_resume.configure(state="normal"))
 
         threading.Thread(target=worker, daemon=True).start()
 
