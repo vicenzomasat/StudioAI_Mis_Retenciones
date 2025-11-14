@@ -1,0 +1,117 @@
+<div data-v-f1c89f8c="" class="form-group">
+  <label data-v-f1c89f8c="" for="selectImpuestos">Impuesto *</label>
+  <div data-v-f1c89f8c="">
+    <div class="multiselect e-multi-select e-multi-select-size--md" isrequired="false" labelprop="label" notempty="false">
+      <div class="multiselect-wrapper" tabindex="-1">
+        <!-- Search -->
+        <input type="text" class="multiselect-search" id="selectImpuestos" aria-controls="selectImpuestos-multiselect-options" aria-placeholder="Seleccioná tu impuesto retenido" aria-expanded="false" aria-multiselectable="false" role="combobox" aria-labelledby="selectImpuestos-assist" modelvalue="">
+        <!-- Tags (with search) -->
+        <!--v-if-->
+        <!-- Single label -->
+        <!--v-if-->
+        <!-- Multiple label -->
+        <!--v-if-->
+        <!-- Placeholder -->
+        <div class="multiselect-placeholder" aria-hidden="true">Seleccioná tu impuesto retenido</div>
+        <!-- Spinner -->
+        <!--v-if-->
+        <!-- Clear -->
+        <!--v-if-->
+        <!-- Caret -->
+        <span class="e-icon material-symbols-rounded md-sm icon-multiselect" id="selectImpuestos_caret">expand_more</span>
+      </div>
+      <!-- Options -->
+      <div id="selectImpuestos-dropdown" class="multiselect-dropdown is-hidden" tabindex="-1">
+        <ul class="multiselect-options" id="selectImpuestos-multiselect-options" role="listbox">
+          <li class="multiselect-group" id="selectImpuestos-multiselect-group-0" aria-label="Impositivas" aria-selected="false" role="option">
+            <div class="multiselect-group-label">
+              <span>Impositivas</span>
+            </div>
+            <ul class="multiselect-group-options" aria-label="Impositivas" role="group">
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_172" aria-selected="false" aria-label="172 - IMPUESTO TRANSF DE INMUEBLES" role="option">
+                <span>172 - IMPUESTO TRANSF DE INMUEBLES</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_216" aria-selected="false" aria-label="216 - SIRE -  IVA" role="option">
+                <span>216 - SIRE - IVA</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_217" aria-selected="false" aria-label="217 - SICORE-IMPTO.A LAS GANANCIAS" role="option">
+                <span>217 - SICORE-IMPTO.A LAS GANANCIAS</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_218" aria-selected="false" aria-label="218 - IMP.A LAS GAN.- BENEF.DEL EXT." role="option">
+                <span>218 - IMP.A LAS GAN.- BENEF.DEL EXT.</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_219" aria-selected="false" aria-label="219 - SICORE-IMPTO.S/ BS PERSONALES" role="option">
+                <span>219 - SICORE-IMPTO.S/ BS PERSONALES</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_222" aria-selected="false" aria-label="222 - DONACIONES Y OTRO TIPO DE LIB." role="option">
+                <span>222 - DONACIONES Y OTRO TIPO DE LIB.</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_466" aria-selected="false" aria-label="466 - SICORE-PREMIOS JUEGOS Y C.DEP" role="option">
+                <span>466 - SICORE-PREMIOS JUEGOS Y C.DEP</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_767" aria-selected="false" aria-label="767 - SICORE - RETENCIONES Y PERCEPC" role="option">
+                <span>767 - SICORE - RETENCIONES Y PERCEPC</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_787" aria-selected="false" aria-label="787 - RET ART 79 LEY GCIAS INC A,ByC" role="option">
+                <span>787 - RET ART 79 LEY GCIAS INC A,ByC</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-IMP_939" aria-selected="false" aria-label="939 - PERCEPCION IMPUESTO PAIS" role="option">
+                <span>939 - PERCEPCION IMPUESTO PAIS</span>
+              </li>
+            </ul>
+          </li>
+          <li class="multiselect-group" id="selectImpuestos-multiselect-group-1" aria-label="Seguridad Social" aria-selected="false" role="option">
+            <div class="multiselect-group-label">
+              <span>Seguridad Social</span>
+            </div>
+            <ul class="multiselect-group-options" aria-label="Seguridad Social" role="group">
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-SS_353" aria-selected="false" aria-label="353 - RETENCIONES CONTRIB.SEG.SOCIAL" role="option">
+                <span>353 - RETENCIONES CONTRIB.SEG.SOCIAL</span>
+              </li>
+            </ul>
+          </li>
+          <li class="multiselect-group" id="selectImpuestos-multiselect-group-2" aria-label="Aduaneras" aria-selected="false" role="option">
+            <div class="multiselect-group-label">
+              <span>Aduaneras</span>
+            </div>
+            <ul class="multiselect-group-options" aria-label="Aduaneras" role="group">
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-ADU_217" aria-selected="false" aria-label="217 - SICORE-IMPTO.A LAS GANANCIAS" role="option">
+                <span>217 - SICORE-IMPTO.A LAS GANANCIAS</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-ADU_767" aria-selected="false" aria-label="767 - SICORE - RETENCIONES Y PERCEPC" role="option">
+                <span>767 - SICORE - RETENCIONES Y PERCEPC</span>
+              </li>
+            </ul>
+          </li>
+          <li class="multiselect-group" id="selectImpuestos-multiselect-group-3" aria-label="Certificados SIRE" aria-selected="false" role="option">
+            <div class="multiselect-group-label">
+              <span>Certificados SIRE</span>
+            </div>
+            <ul class="multiselect-group-options" aria-label="Certificados SIRE" role="group">
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-SIR_216" aria-selected="false" aria-label="216 - SIRE -  IVA" role="option">
+                <span>216 - SIRE - IVA</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-SIR_218" aria-selected="false" aria-label="218 - IMP.A LAS GAN.- BENEF.DEL EXT." role="option">
+                <span>218 - IMP.A LAS GAN.- BENEF.DEL EXT.</span>
+              </li>
+              <li class="multiselect-option" id="selectImpuestos-multiselect-option-SIR_353" aria-selected="false" aria-label="353 - RETENCIONES CONTRIB.SEG.SOCIAL" role="option">
+                <span>353 - RETENCIONES CONTRIB.SEG.SOCIAL</span>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <!--v-if-->
+        <!--v-if-->
+        <!--v-if-->
+      </div>
+      <!-- Hacky input element to show HTML5 required warning -->
+      <!--v-if-->
+      <!-- Native input support -->
+      <!--v-if-->
+      <!-- Screen reader assistive text -->
+      <!--v-if-->
+      <!-- Create height for empty input -->
+      <div class="multiselect-spacer"></div>
+    </div>
+  </div>
+</div>

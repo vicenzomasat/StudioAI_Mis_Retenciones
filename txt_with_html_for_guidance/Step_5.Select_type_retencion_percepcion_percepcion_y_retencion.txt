@@ -1,0 +1,19 @@
+<div data-v-f1c89f8c="" class="form-group">
+  <label data-v-f1c89f8c="" for="tipoOperacion">Tipo de operación *</label>
+  <div data-v-f1c89f8c="" class="mt-2">
+    <div data-v-f1c89f8c="" id="tipoOperacion" class="e-check form-check form-check-inline radio-responsive">
+      <div data-v-f1c89f8c="" id="__EVID__675690__EV__e-check-item__" class="e-check-item form-check form-check-inline">
+        <label class="form-check-label">
+          <input id="__EVID__675690__EV__e-check-item___input" class="e-check-item--checker form-check-input" type="radio" role="null" tabindex="0" valuetype="string" value="1"> Retención </label>
+      </div>
+      <div data-v-f1c89f8c="" id="__EVID__716140__EV__e-check-item__" class="e-check-item form-check form-check-inline">
+        <label class="form-check-label">
+          <input id="__EVID__716140__EV__e-check-item___input" class="e-check-item--checker form-check-input" type="radio" role="null" tabindex="0" valuetype="string" value="2"> Percepción </label>
+      </div>
+      <div data-v-f1c89f8c="" id="__EVID__448942__EV__e-check-item__" class="e-check-item form-check form-check-inline">
+        <label class="form-check-label">
+          <input id="__EVID__448942__EV__e-check-item___input" class="e-check-item--checker form-check-input" type="radio" role="null" tabindex="0" valuetype="string" value="0"> Retención y percepción </label>
+      </div>
+    </div>
+  </div>
+</div>

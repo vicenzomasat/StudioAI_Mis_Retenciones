@@ -1,0 +1,10 @@
+<div class="col-xs-12 col-sm-6 col-md-4">
+  <a class="panel panel-default" title="mis_retenciones" role="button">
+    <div class="media p-a-2">
+      <div class="media-body">
+        <h3 class="roboto-font bold h5">MIS RETENCIONES</h3>
+        <p class="text-muted">Mis Retenciones / Percepciones</p>
+      </div>
+    </div>
+  </a>
+</div>

@@ -1,0 +1,43 @@
+<div data-v-a97870d2="" class="d-flex align-items-center">
+  <div data-v-a97870d2="" class="d-md-flex d-none">
+    <div data-v-a97870d2="" class="d-flex flex-column align-self-center align-items-end">
+      <div data-v-a97870d2="" class="e-navbar__user__container">
+        <span data-v-a97870d2="" class="e-navbar-text-small text-institutional-primary fw-bold me-2 text-uppercase" id="navBarMisRetenciones-userLabel">LORENZON ROQUE IGNACIO</span>
+        <span data-v-a97870d2="" class="e-navbar-text-small text-grey-32" id="navBarMisRetenciones-userCuit">[20-31458425-3]</span>
+      </div>
+      <div data-v-a97870d2="">
+        <!---->
+      </div>
+    </div>
+  </div>
+  <div data-v-a97870d2="" class="dropdown d-block">
+    <a data-v-a97870d2="" id="e-navbar-dropdown-toggle" class="dropdown-toggle text-decoration-none" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+      <span data-v-a97870d2="" id="navBarMisRetenciones_avatar" class="e-avatar rounded-circle e-avatar-size--xs e-avatar-color--primary e-avatar-non-clickable-primary--false e-navbar-avatar--ms">
+        <span class="e-avatar-text">
+          <span>LR</span>
+        </span>
+      </span>
+    </a>
+    <ul data-v-a97870d2="" class="dropdown-menu dropdown-menu-end" aria-labelledby="e-navbar-dropdown-toggle">
+      <!---->
+      <li data-v-a97870d2="">
+        <!---->
+      </li>
+      <li data-v-a97870d2="">
+        <a data-v-a97870d2="" class="dropdown-item d-flex e-navbar-dropdown" href="#" id="navBarMisRetenciones-dropdown-changeRelation">
+          <span data-v-a97870d2="" class="e-icon material-symbols-rounded text-primary e-icon-no-fill e-navbar-icon" id="__EVID__538858__EV__e-icon__">group</span>
+          <span data-v-a97870d2="">Seleccionar representado</span>
+        </a>
+      </li>
+      <li data-v-a97870d2="">
+        <hr data-v-a97870d2="" class="e-navbar-hr" size="3">
+      </li>
+      <li data-v-a97870d2="">
+        <a data-v-a97870d2="" class="dropdown-item d-flex e-navbar-dropdown" href="#" id="navBarMisRetenciones-dropdown-logout">
+          <span data-v-a97870d2="" class="e-icon material-symbols-rounded text-primary e-icon-no-fill e-navbar-icon" id="__EVID__895294__EV__e-icon__">logout</span>
+          <span data-v-a97870d2="">Cerrar sesión</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

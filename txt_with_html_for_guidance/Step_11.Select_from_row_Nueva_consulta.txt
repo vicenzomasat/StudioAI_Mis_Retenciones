@@ -1,0 +1,29 @@
+<ul class="flex-row nav e-tabs-nav" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="e-tabs-nav-link e-tabs-size--sm" id="tabNuevaConsulta-tab" data-bs-toggle="tab" data-bs-target="#tabNuevaConsulta" type="button" role="tab" aria-controls="tabNuevaConsulta" aria-selected="false" tabindex="-1">
+      <div class="e-tabs-button__container">
+        <!---->
+        <span class="e-tabs-button__text">Nueva consulta</span>
+        <!---->
+      </div>
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="e-tabs-nav-link disabled e-tabs-size--sm" id="tabConsultasPredeterminadas-tab" data-bs-toggle="tab" data-bs-target="#tabConsultasPredeterminadas" type="button" role="tab" aria-controls="tabConsultasPredeterminadas" aria-selected="false" tabindex="0">
+      <div class="e-tabs-button__container">
+        <!---->
+        <span class="e-tabs-button__text">Consultas predeterminadas</span>
+        <!---->
+      </div>
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="e-tabs-nav-link e-tabs-size--sm active" id="tabConsultasExportdas-tab" data-bs-toggle="tab" data-bs-target="#tabConsultasExportdas" type="button" role="tab" aria-controls="tabConsultasExportdas" aria-selected="true" tabindex="1">
+      <div class="e-tabs-button__container">
+        <!---->
+        <span class="e-tabs-button__text">Consultas exportadas</span>
+        <!---->
+      </div>
+    </button>
+  </li>
+</ul>

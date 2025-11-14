@@ -1,0 +1,35 @@
+<div comp-id="1987" style="top: 0px; height: 35px; --ag-line-height: 33px;" row-index="0" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-first" aria-rowindex="2" aria-label="Press SPACE to select this row." role="row" row-id="94e6d475-0155-471e-81cf-2548087bf0f4">
+  <div comp-id="1991" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="1" col-id="filtros" role="gridcell" style="left: 0px; width: 350px; display: flex; justify-content: left;">Impuesto 217 SICORE-IMPTO.A LAS GANANCIAS</div>
+  <div comp-id="1992" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="2" col-id="fechaTimestamp" role="gridcell" style="left: 350px; width: 200px; display: flex; justify-content: left;">14/11/2025 08:30</div>
+  <div comp-id="1993" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="tipo" role="gridcell" style="left: 550px; width: 200px; display: flex; justify-content: left;">CSV</div>
+  <div comp-id="1994" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="4" col-id="estado" role="gridcell" style="left: 750px; width: 150px; display: flex; justify-content: left;">
+    <div class="position-relative">
+      <div>
+        <span class="badge rounded rounded-pill" style="border: 1px solid rgb(25, 135, 84); padding: 0.375rem 0.75rem; font-size: 0.75rem; color: rgb(25, 135, 84); --darkreader-inline-border-top: var(--darkreader-border-198754, #279b65); --darkreader-inline-border-right: var(--darkreader-border-198754, #279b65); --darkreader-inline-border-bottom: var(--darkreader-border-198754, #279b65); --darkreader-inline-border-left: var(--darkreader-border-198754, #279b65); --darkreader-inline-color: var(--darkreader-text-198754, #6cc79d);" data-darkreader-inline-border-top="" data-darkreader-inline-border-right="" data-darkreader-inline-border-bottom="" data-darkreader-inline-border-left="" data-darkreader-inline-color=""> Finalizado </span>
+      </div>
+    </div>
+  </div>
+  <div comp-id="1995" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="tooltip" role="gridcell" style="left: 900px; width: 60px; display: flex; justify-content: left;">
+    <div class="position-relative">
+      <button id="__EVID__708033__EV__e-button__" class="btn e-button btn-tertiary d-flex align-items-center gap-2 boton_filtros" type="button" tabindex="0" title="Ver filtros aplicados" alt="Ver filtros aplicados" style="color: var(--bs-primary); --aec932dc: inline-flex; --darkreader-inline-color: var(--darkreader-text--bs-primary, var(--darkreader-text-000000, #c9c7c5));" data-darkreader-inline-color="">
+        <!---->
+        <span class="e-icon material-symbols-rounded e-icon-no-fill" id="__EVID__303581__EV__e-icon__">visibility</span>
+        <!---->
+        <!---->
+      </button>
+    </div>
+  </div>
+  <div comp-id="1996" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="filename" role="gridcell" style="left: 960px; width: 70px; display: flex; justify-content: left;">
+    <div>
+      <!---->
+      <a href="/api/mirequabusiness/exportar-aplicativo/descarga?pid=94e6d475-0155-471e-81cf-2548087bf0f4&amp;cuitRetenido=30707656707" download="30707656707_IMP_PER_RET_14112025.csv" class="boton_mt" target="_blank" style="display: flex; align-items: center; gap: 8px;">
+        <button id="__EVID__689778__EV__e-button__" class="btn e-button btn-tertiary e-button-circular e-button-icon" type="button" tabindex="0" title="Descargar archivo generado" alt="Descargar archivo generado" style="color: var(--bs-primary); --aec932dc: inline-flex; --darkreader-inline-color: var(--darkreader-text--bs-primary, var(--darkreader-text-000000, #c9c7c5));" data-darkreader-inline-color="">
+          <span class="e-icon material-symbols-rounded md-sm" id="__EVID__107903__EV__e-icon__">file_download</span>
+          <!---->
+          <!---->
+        </button>
+        <!---->
+      </a>
+    </div>
+  </div>
+</div>

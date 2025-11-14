@@ -1,0 +1,83 @@
+<div data-v-1fd6b6bb="" class="col mt-3">
+  <!---->
+  <div data-v-1fd6b6bb="" class="mt-3 mb-3">
+    <h5 data-v-1fd6b6bb="" class="text-grey-20 fw-bold e-relation-selector__font--roboto e-relation-selector__font--text"> Elegí otra persona para representar </h5>
+  </div>
+  <div data-v-1fd6b6bb="" class="e-relation-selector__container" role="tablist">
+    <div data-v-434adc5a="" data-v-1fd6b6bb="" id="selectorRelaciones_relation0" class="mb-3" role="tab" tabindex="0">
+      <div data-v-434adc5a="" id="__EVID__543585__EV__e-custom-card__" class="card mb-3 mb-3 e-relation__card" role="tab" tabindex="0" style="--6b3cc780: 16/9;">
+        <!---->
+        <!---->
+        <div id="__EVID__543585__EV__e-custom-card__-body" class="card-body">
+          <!---->
+          <!---->
+          <div data-v-434adc5a="" class="d-flex align-items-start">
+            <span data-v-434adc5a="" id="selectorRelaciones_relation0_avatar" class="e-avatar rounded-circle e-avatar-size--xs e-avatar-color--primary e-avatar-non-clickable-primary--false me-3">
+              <span class="e-avatar-text">
+                <span>LR</span>
+              </span>
+            </span>
+            <div data-v-434adc5a="" class="flex-grow-1 align-self-center d-flex flex-column">
+              <h6 data-v-434adc5a="" class="text-grey-20 mb-0 e-relation__text--name">LORENZON ROQUE IGNACIO</h6>
+              <h6 data-v-434adc5a="" class="mb-0 e-relation__text--cuit">20-31458425-3</h6>
+            </div>
+          </div>
+        </div>
+        <!---->
+        <!---->
+        <!---->
+      </div>
+    </div>
+    <div data-v-434adc5a="" data-v-1fd6b6bb="" id="selectorRelaciones_relation1" class="mb-3" role="tab" tabindex="0">
+      <div data-v-434adc5a="" id="__EVID__373806__EV__e-custom-card__" class="card mb-3 mb-3 e-relation__card" role="tab" tabindex="0" style="--6b3cc780: 16/9;">
+        <!---->
+        <!---->
+        <div id="__EVID__373806__EV__e-custom-card__-body" class="card-body">
+          <!---->
+          <!---->
+          <div data-v-434adc5a="" class="d-flex align-items-start">
+            <span data-v-434adc5a="" id="selectorRelaciones_relation1_avatar" class="e-avatar rounded-circle e-avatar-size--xs e-avatar-color--primary e-avatar-non-clickable-primary--false me-3">
+              <span class="e-avatar-text">
+                <span>LR</span>
+              </span>
+            </span>
+            <div data-v-434adc5a="" class="flex-grow-1 align-self-center d-flex flex-column">
+              <h6 data-v-434adc5a="" class="text-grey-20 mb-0 e-relation__text--name">LORENZON ROQUE IGNACIO</h6>
+              <h6 data-v-434adc5a="" class="mb-0 e-relation__text--cuit">20-31458425-3</h6>
+            </div>
+          </div>
+        </div>
+        <!---->
+        <!---->
+        <!---->
+      </div>
+    </div>
+    <div data-v-434adc5a="" data-v-1fd6b6bb="" id="selectorRelaciones_relation2" class="mb-3" role="tab" tabindex="0">
+      <div data-v-434adc5a="" id="__EVID__043971__EV__e-custom-card__" class="card mb-3 mb-3 e-relation__card" role="tab" tabindex="0" style="--6b3cc780: 16/9;">
+        <!---->
+        <!---->
+        <div id="__EVID__043971__EV__e-custom-card__-body" class="card-body">
+          <!---->
+          <!---->
+          <div data-v-434adc5a="" class="d-flex align-items-start">
+            <span data-v-434adc5a="" id="selectorRelaciones_relation2_avatar" class="e-avatar rounded-circle e-avatar-size--xs e-avatar-color--info e-avatar-non-clickable-info--false me-3">
+              <span class="e-avatar-text">
+                <span>IS</span>
+              </span>
+            </span>
+            <div data-v-434adc5a="" class="flex-grow-1 align-self-center d-flex flex-column">
+              <h6 data-v-434adc5a="" class="text-grey-20 mb-0 e-relation__text--name">IDEA S.A.</h6>
+              <h6 data-v-434adc5a="" class="mb-0 e-relation__text--cuit">30-70765670-7</h6>
+            </div>
+          </div>
+        </div>
+        <!---->
+        <!---->
+        <!---->
+      </div>
+    </div>
+  </div>
+  <div data-v-1fd6b6bb="" class="d-flex justify-content-end">
+    <!---->
+  </div>
+</div>
