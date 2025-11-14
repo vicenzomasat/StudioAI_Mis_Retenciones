@@ -1,0 +1,7 @@
+<div data-v-f1c89f8c="" class="mb-3 d-flex justify-content-end">
+  <button data-v-f1c89f8c="" id="btnRecargarTablaAplicativo" class="btn e-button btn-primary" type="button" tabindex="0" style="--aec932dc: inline-flex;">
+    <!---->
+    <span data-v-f1c89f8c="" class="e-icon material-symbols-rounded" id="__EVID__467724__EV__e-icon__">refresh</span>
+    <!---->
+  </button>
+</div>
