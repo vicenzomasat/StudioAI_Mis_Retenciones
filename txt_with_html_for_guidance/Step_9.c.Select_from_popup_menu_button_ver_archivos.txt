@@ -1,0 +1,1 @@
+<button id="modal-sinresultados_btnOK" type="button" class="btn btn-primary" size="md">Ver archivo</button>
