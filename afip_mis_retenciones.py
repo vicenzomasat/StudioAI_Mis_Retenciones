@@ -398,20 +398,46 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     on_log(f"Completando fechas: {fecha_desde} - {fecha_hasta}...")
 
     # Fecha desde
+    on_log(f"  [DEBUG] Localizando campo 'Fecha desde'...")
     fecha_desde_input = page.locator("#datePickerFechasRetencionesDesde__input")
     await fecha_desde_input.wait_for(state="visible", timeout=10000)
+    on_log(f"  [DEBUG] Click en 'Fecha desde'...")
     await fecha_desde_input.click()
-    await asyncio.sleep(0.3)
+    await asyncio.sleep(0.5)
+
+    # Clear any existing value first
+    await fecha_desde_input.fill("")
+    await asyncio.sleep(0.2)
+
+    on_log(f"  [DEBUG] Llenando 'Fecha desde' con: {fecha_desde}")
     await fecha_desde_input.fill(fecha_desde)
-    await asyncio.sleep(0.3)
+    await asyncio.sleep(0.5)
+
+    # Press Tab or click elsewhere to close any date picker that might have opened
+    on_log(f"  [DEBUG] Presionando Tab para cerrar datepicker...")
+    await fecha_desde_input.press("Tab")
+    await asyncio.sleep(0.5)
 
     # Fecha hasta
+    on_log(f"  [DEBUG] Localizando campo 'Fecha hasta'...")
     fecha_hasta_input = page.locator("#datePickerFechasRetencionesHasta__input")
     await fecha_hasta_input.wait_for(state="visible", timeout=10000)
+    on_log(f"  [DEBUG] Click en 'Fecha hasta'...")
     await fecha_hasta_input.click()
-    await asyncio.sleep(0.3)
+    await asyncio.sleep(0.5)
+
+    # Clear any existing value first
+    await fecha_hasta_input.fill("")
+    await asyncio.sleep(0.2)
+
+    on_log(f"  [DEBUG] Llenando 'Fecha hasta' con: {fecha_hasta}")
     await fecha_hasta_input.fill(fecha_hasta)
-    await asyncio.sleep(0.3)
+    await asyncio.sleep(0.5)
+
+    # Press Tab or Escape to close any date picker
+    on_log(f"  [DEBUG] Presionando Escape para cerrar datepicker...")
+    await fecha_hasta_input.press("Escape")
+    await asyncio.sleep(0.5)
 
     on_log("✓ Formulario completado")
 
@@ -440,87 +466,119 @@ async def _export_csv(page, on_log=print):
     on_log("Exportando a CSV...")
 
     # Click on the Export dropdown button
+    on_log("  [DEBUG] Buscando botón 'Exportar'...")
     export_btn = page.locator("#btnExportarOtrosFormatos, button#btnExportarOtrosFormatos")
     await export_btn.wait_for(state="visible", timeout=15000)
     await export_btn.scroll_into_view_if_needed()
+    on_log("  [DEBUG] Click en botón 'Exportar'...")
     await export_btn.click()
-    await asyncio.sleep(0.5)
-
-    # Wait for dropdown menu to appear
-    await page.wait_for_selector(".dropdown-menu a.dropdown-item:has-text('.CSV')", timeout=10000)
-
-    # Click on CSV option
-    csv_option = page.locator(".dropdown-menu a.dropdown-item:has-text('.CSV')").first
-    await csv_option.click()
     await asyncio.sleep(1)
 
-    on_log("✓ Exportación iniciada")
+    # Wait for dropdown menu to appear
+    on_log("  [DEBUG] Esperando menú dropdown...")
+    await page.wait_for_selector(".dropdown-menu a.dropdown-item:has-text('.CSV')", timeout=10000)
+    on_log("  [DEBUG] Menú dropdown visible")
+
+    # Click on CSV option
+    on_log("  [DEBUG] Click en opción '.CSV'...")
+    csv_option = page.locator(".dropdown-menu a.dropdown-item:has-text('.CSV')").first
+    await csv_option.click()
+    await asyncio.sleep(2)
+
+    on_log("✓ Click en CSV completado - exportación iniciada")
 
 async def _handle_export_popup(page, on_log=print):
-    """Handle the export popup and click 'Ver archivo' with robust selector strategy."""
-    on_log("Esperando popup de exportación...")
+    """Navigate to 'Consultas exportadas' tab after export.
 
-    # Wait for the modal to appear
+    NOTE: AFIP changed their UI - the modal popup NO LONGER APPEARS after clicking CSV export.
+    Instead, we need to manually navigate to the 'Consultas exportadas' tab.
+    """
+    on_log("[DEBUG] Verificando si aparece popup de exportación...")
+
+    # Give a short time to see if popup appears (but it probably won't)
+    modal_appeared = False
     try:
-        await page.wait_for_selector("#modal-sinresultados_content, .modal-content", timeout=15000)
-        on_log("✓ Popup apareció")
+        await page.wait_for_selector("#modal-sinresultados_content, .modal-content", timeout=3000)
+        modal_appeared = True
+        on_log("✓ Popup apareció (comportamiento antiguo)")
+    except TimeoutError:
+        on_log("  [DEBUG] Popup NO apareció (comportamiento nuevo esperado)")
 
-        # Give the modal time to fully render
-        await asyncio.sleep(1)
+    if modal_appeared:
+        # Old behavior: popup appeared, click "Ver archivo" button
+        on_log("Buscando botón 'Ver archivo' en popup...")
 
-        # Try multiple selector strategies to find the "Ver archivo" button
-        ver_archivo_btn = None
         selectors_to_try = [
-            # Strategy 1: By specific ID (most reliable)
             "#modal-sinresultados_btnOK",
-            # Strategy 2: By ID within modal footer
-            "#modal-sinresultados_footer button#modal-sinresultados_btnOK",
-            # Strategy 3: By class and role within modal footer
             "#modal-sinresultados_footer button.btn.btn-primary",
-            # Strategy 4: By text content within modal
-            "#modal-sinresultados_content button:has-text('Ver archivo')",
-            # Strategy 5: By class within modal content
-            ".modal-content button.btn-primary:has-text('Ver archivo')",
-            # Strategy 6: Any button with exact text
+            ".modal-content button:has-text('Ver archivo')",
             "button:has-text('Ver archivo')",
-            # Strategy 7: Case-insensitive text match
-            "button:text-is('Ver archivo')",
         ]
 
-        on_log("Buscando botón 'Ver archivo' con estrategia multi-nivel...")
-
+        ver_archivo_btn = None
         for idx, selector in enumerate(selectors_to_try, 1):
             try:
                 candidate = page.locator(selector).first
-                # Check if element exists and is visible
                 if await candidate.count() > 0:
-                    await candidate.wait_for(state="visible", timeout=3000)
+                    await candidate.wait_for(state="visible", timeout=2000)
                     ver_archivo_btn = candidate
-                    on_log(f"✓ Botón encontrado con estrategia #{idx}: {selector}")
+                    on_log(f"✓ Botón encontrado: {selector}")
                     break
-            except Exception as e:
-                on_log(f"  Estrategia #{idx} falló: {selector}")
+            except Exception:
                 continue
 
-        if ver_archivo_btn is None:
-            raise Exception("No se pudo encontrar el botón 'Ver archivo' con ninguna estrategia")
+        if ver_archivo_btn:
+            await ver_archivo_btn.scroll_into_view_if_needed()
+            await asyncio.sleep(0.5)
+            on_log("Click en 'Ver archivo'...")
+            await ver_archivo_btn.click()
+            await page.wait_for_load_state("networkidle", timeout=20000)
+            await asyncio.sleep(2)
+            on_log("✓ Navegado a 'Consultas exportadas' (vía popup)")
+            return
 
-        # Ensure button is in viewport and clickable
-        await ver_archivo_btn.scroll_into_view_if_needed()
-        await asyncio.sleep(0.5)
+    # New behavior (default): No popup, manually navigate to "Consultas exportadas" tab
+    on_log("Navegando manualmente a tab 'Consultas exportadas'...")
 
-        # Click the button
-        on_log("Haciendo click en 'Ver archivo'...")
-        await ver_archivo_btn.click()
+    # Wait a bit for the export to be registered
+    await asyncio.sleep(2)
 
-        # Wait for navigation to "Consultas exportadas"
-        await page.wait_for_load_state("networkidle", timeout=20000)
-        await asyncio.sleep(2)
+    # Try to find and click the "Consultas exportadas" tab
+    tab_selectors = [
+        "button#tabConsultasExportdas-tab",
+        "button[aria-controls='tabConsultasExportdas']",
+        "button:has-text('Consultas exportadas')",
+        "a:has-text('Consultas exportadas')",
+        "[role='tab']:has-text('Consultas exportadas')",
+    ]
 
-        on_log("✓ Navegado a 'Consultas exportadas'")
+    on_log("  [DEBUG] Buscando tab 'Consultas exportadas'...")
+    tab_found = False
 
-    except TimeoutError:
-        on_log("⚠ Popup no apareció. Es posible que ya estemos en la página correcta.")
+    for idx, selector in enumerate(tab_selectors, 1):
+        try:
+            on_log(f"  [DEBUG] Probando selector #{idx}: {selector}")
+            tab = page.locator(selector).first
+            if await tab.count() > 0:
+                on_log(f"  [DEBUG] Tab encontrada con selector #{idx}")
+                await tab.wait_for(state="visible", timeout=5000)
+                await tab.scroll_into_view_if_needed()
+                await asyncio.sleep(0.5)
+                on_log(f"  [DEBUG] Click en tab 'Consultas exportadas'...")
+                await tab.click()
+                await asyncio.sleep(2)
+                await page.wait_for_load_state("networkidle", timeout=15000)
+                tab_found = True
+                on_log("✓ Navegado a 'Consultas exportadas' (vía tab)")
+                break
+        except Exception as e:
+            on_log(f"  [DEBUG] Selector #{idx} falló: {e}")
+            continue
+
+    if not tab_found:
+        on_log("⚠ No se pudo encontrar tab 'Consultas exportadas' - continuando de todas formas...")
+
+    await asyncio.sleep(2)
 
 async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=10):
     """Wait for the file to be ready in 'Consultas exportadas' and download it.
@@ -568,33 +626,67 @@ async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_d
 
         try:
             # Find all rows
+            on_log("  [DEBUG] Buscando filas en tabla con selector '.ag-row[role='row']'")
             rows = page.locator(".ag-row[role='row']")
             row_count = await rows.count()
 
-            on_log(f"Encontradas {row_count} filas en la tabla")
+            on_log(f"  [DEBUG] Encontradas {row_count} filas en la tabla")
 
             if row_count > 0:
                 # Check the first row (most recent)
                 first_row = rows.first
+                on_log("  [DEBUG] Analizando primera fila...")
 
-                # Get the filtros text (contains tax info)
-                filtros_cell = first_row.locator("[col-id='filtros']")
-                filtros_text = await filtros_cell.text_content()
+                # Get the filtros text (contains tax info) - with error handling
+                filtros_text = ""
+                estado_text = ""
 
-                # Get estado
-                estado_cell = first_row.locator("[col-id='estado']")
-                estado_text = await estado_cell.text_content()
+                try:
+                    on_log("  [DEBUG] Buscando celda 'filtros' con selector [col-id='filtros']")
+                    filtros_cell = first_row.locator("[col-id='filtros']")
 
-                on_log(f"Primera fila - Filtros: {filtros_text}, Estado: {estado_text}")
+                    # Wait for cell to be available with shorter timeout
+                    await filtros_cell.wait_for(state="attached", timeout=5000)
+                    filtros_text = await filtros_cell.text_content(timeout=5000)
+                    on_log(f"  [DEBUG] Filtros text: '{filtros_text}'")
+                except Exception as e:
+                    on_log(f"  [DEBUG] Error leyendo filtros: {e}")
+                    # Try alternative selector
+                    try:
+                        on_log("  [DEBUG] Intentando selector alternativo para filtros...")
+                        filtros_text = await first_row.locator("div.ag-cell[col-id='filtros']").text_content(timeout=5000)
+                        on_log(f"  [DEBUG] Filtros (alternativo): '{filtros_text}'")
+                    except Exception as e2:
+                        on_log(f"  [DEBUG] Error con selector alternativo: {e2}")
+
+                try:
+                    on_log("  [DEBUG] Buscando celda 'estado' con selector [col-id='estado']")
+                    estado_cell = first_row.locator("[col-id='estado']")
+                    await estado_cell.wait_for(state="attached", timeout=5000)
+                    estado_text = await estado_cell.text_content(timeout=5000)
+                    on_log(f"  [DEBUG] Estado text: '{estado_text}'")
+                except Exception as e:
+                    on_log(f"  [DEBUG] Error leyendo estado: {e}")
+                    # Try alternative selector
+                    try:
+                        on_log("  [DEBUG] Intentando selector alternativo para estado...")
+                        estado_text = await first_row.locator("div.ag-cell[col-id='estado']").text_content(timeout=5000)
+                        on_log(f"  [DEBUG] Estado (alternativo): '{estado_text}'")
+                    except Exception as e2:
+                        on_log(f"  [DEBUG] Error con selector alternativo: {e2}")
+
+                on_log(f"Primera fila - Filtros: '{filtros_text}', Estado: '{estado_text}'")
 
                 # Check if it matches our query
-                if tax_number in filtros_text and "Finalizado" in estado_text:
+                if filtros_text and tax_number in filtros_text and estado_text and "Finalizado" in estado_text:
                     on_log(f"✓ Archivo encontrado y listo!")
 
                     # Click the download button
-                    download_btn = first_row.locator("button[title*='Descargar'], a[download]").first
+                    on_log("  [DEBUG] Buscando botón de descarga...")
+                    download_btn = first_row.locator("button[title*='Descargar'], a[download], button:has-text('Descargar')").first
 
                     # Set up download handler
+                    on_log("  [DEBUG] Iniciando descarga...")
                     async with page.expect_download(timeout=30000) as download_info:
                         await download_btn.click()
                         download = await download_info.value
@@ -607,17 +699,22 @@ async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_d
                     save_path = OUTPUT_DIR / filename
 
                     # Save the download
+                    on_log(f"  [DEBUG] Guardando archivo en: {save_path}")
                     await download.save_as(save_path)
                     on_log(f"✓ Archivo descargado: {save_path}")
 
                     return str(save_path)
                 else:
-                    on_log(f"⚠ El archivo más reciente no coincide con nuestra consulta. Esperando...")
+                    on_log(f"⚠ El archivo más reciente no coincide con nuestra consulta o no está finalizado. Esperando...")
+                    on_log(f"  [DEBUG] Esperado tax_number: '{tax_number}', Estado esperado: 'Finalizado'")
             else:
                 on_log("⚠ No hay archivos en la tabla aún. Esperando...")
 
         except Exception as e:
+            import traceback
             on_log(f"⚠ Error al buscar archivo: {e}")
+            on_log(f"  [DEBUG] Traceback completo:")
+            on_log(f"{traceback.format_exc()}")
 
         # Wait before next attempt
         await asyncio.sleep(10)
