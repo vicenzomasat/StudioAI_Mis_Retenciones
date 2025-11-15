@@ -457,7 +457,7 @@ async def _export_csv(page, on_log=print):
     on_log("✓ Exportación iniciada")
 
 async def _handle_export_popup(page, on_log=print):
-    """Handle the export popup and click 'Ver archivo'."""
+    """Handle the export popup and click 'Ver archivo' with robust selector strategy."""
     on_log("Esperando popup de exportación...")
 
     # Wait for the modal to appear
@@ -465,9 +465,52 @@ async def _handle_export_popup(page, on_log=print):
         await page.wait_for_selector("#modal-sinresultados_content, .modal-content", timeout=15000)
         on_log("✓ Popup apareció")
 
-        # Click on "Ver archivo" button
-        ver_archivo_btn = page.locator("#modal-sinresultados_btnOK, button:has-text('Ver archivo')").first
-        await ver_archivo_btn.wait_for(state="visible", timeout=10000)
+        # Give the modal time to fully render
+        await asyncio.sleep(1)
+
+        # Try multiple selector strategies to find the "Ver archivo" button
+        ver_archivo_btn = None
+        selectors_to_try = [
+            # Strategy 1: By specific ID (most reliable)
+            "#modal-sinresultados_btnOK",
+            # Strategy 2: By ID within modal footer
+            "#modal-sinresultados_footer button#modal-sinresultados_btnOK",
+            # Strategy 3: By class and role within modal footer
+            "#modal-sinresultados_footer button.btn.btn-primary",
+            # Strategy 4: By text content within modal
+            "#modal-sinresultados_content button:has-text('Ver archivo')",
+            # Strategy 5: By class within modal content
+            ".modal-content button.btn-primary:has-text('Ver archivo')",
+            # Strategy 6: Any button with exact text
+            "button:has-text('Ver archivo')",
+            # Strategy 7: Case-insensitive text match
+            "button:text-is('Ver archivo')",
+        ]
+
+        on_log("Buscando botón 'Ver archivo' con estrategia multi-nivel...")
+
+        for idx, selector in enumerate(selectors_to_try, 1):
+            try:
+                candidate = page.locator(selector).first
+                # Check if element exists and is visible
+                if await candidate.count() > 0:
+                    await candidate.wait_for(state="visible", timeout=3000)
+                    ver_archivo_btn = candidate
+                    on_log(f"✓ Botón encontrado con estrategia #{idx}: {selector}")
+                    break
+            except Exception as e:
+                on_log(f"  Estrategia #{idx} falló: {selector}")
+                continue
+
+        if ver_archivo_btn is None:
+            raise Exception("No se pudo encontrar el botón 'Ver archivo' con ninguna estrategia")
+
+        # Ensure button is in viewport and clickable
+        await ver_archivo_btn.scroll_into_view_if_needed()
+        await asyncio.sleep(0.5)
+
+        # Click the button
+        on_log("Haciendo click en 'Ver archivo'...")
         await ver_archivo_btn.click()
 
         # Wait for navigation to "Consultas exportadas"
