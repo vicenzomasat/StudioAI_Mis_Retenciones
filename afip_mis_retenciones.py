@@ -144,27 +144,27 @@ def validar_rango_fecha(fecha_desde: str, fecha_hasta: str) -> Tuple[bool, str]:
 def now_ts() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-def convert_date_format_for_playwright(date_str: str) -> str:
-    """Convert date from dd/mm/yyyy (UI format) to mm/dd/yyyy (Playwright format).
+def convert_date_format_for_calendar(date_str: str) -> str:
+    """Convert date from dd/mm/yyyy (UI format) to yyyy-mm-dd (Calendar ID format).
 
     Args:
         date_str: Date string in format dd/mm/yyyy (e.g., "31/12/2024")
 
     Returns:
-        Date string in format mm/dd/yyyy (e.g., "12/31/2024")
+        Date string in format yyyy-mm-dd (e.g., "2024-12-31")
 
     Example:
-        >>> convert_date_format_for_playwright("01/01/2024")
-        "01/01/2024"
-        >>> convert_date_format_for_playwright("31/12/2024")
-        "12/31/2024"
+        >>> convert_date_format_for_calendar("01/01/2024")
+        "2024-01-01"
+        >>> convert_date_format_for_calendar("31/12/2024")
+        "2024-12-31"
     """
     try:
         # Parse dd/mm/yyyy
         day, month, year = date_str.split("/")
-        # Return mm/dd/yyyy
-        playwright_format = f"{month}/{day}/{year}"
-        return playwright_format
+        # Return yyyy-mm-dd
+        calendar_format = f"{year}-{month}-{day}"
+        return calendar_format
     except Exception as e:
         logger.warning(f"Error converting date format '{date_str}': {e}. Returning original.")
         return date_str
@@ -419,55 +419,57 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
         except TimeoutError:
             on_log(f"⚠ Campo 'Tipo de operación' no encontrado (puede ser esperado para algunos impuestos)")
 
-    # 3. Fill dates
+    # 3. Fill dates using calendar picker
     on_log(f"Completando fechas: {fecha_desde} - {fecha_hasta}...")
 
-    # Convert dates from dd/mm/yyyy (UI format) to mm/dd/yyyy (Playwright format)
-    fecha_desde_playwright = convert_date_format_for_playwright(fecha_desde)
-    fecha_hasta_playwright = convert_date_format_for_playwright(fecha_hasta)
-    on_log(f"  [DEBUG] Fechas convertidas para Playwright: {fecha_desde_playwright} - {fecha_hasta_playwright}")
+    # Convert dates from dd/mm/yyyy (UI format) to yyyy-mm-dd (Calendar ID format)
+    fecha_desde_calendar = convert_date_format_for_calendar(fecha_desde)
+    fecha_hasta_calendar = convert_date_format_for_calendar(fecha_hasta)
+    on_log(f"  [DEBUG] Fechas convertidas para calendario: {fecha_desde_calendar} - {fecha_hasta_calendar}")
 
     # Fecha desde
-    on_log(f"  [DEBUG] Localizando campo 'Fecha desde'...")
+    on_log(f"  [DEBUG] Seleccionando fecha desde en calendario...")
     fecha_desde_input = page.locator("#datePickerFechasRetencionesDesde__input")
     await fecha_desde_input.wait_for(state="visible", timeout=10000)
-    on_log(f"  [DEBUG] Click en 'Fecha desde'...")
+
+    # Click to open calendar
+    on_log(f"  [DEBUG] Abriendo calendario 'Fecha desde'...")
     await fecha_desde_input.click()
     await asyncio.sleep(0.5)
 
-    # Clear any existing value first
-    await fecha_desde_input.fill("")
-    await asyncio.sleep(0.2)
-
-    on_log(f"  [DEBUG] Llenando 'Fecha desde' con: {fecha_desde_playwright}")
-    await fecha_desde_input.fill(fecha_desde_playwright)
+    # Wait for calendar to render
+    on_log(f"  [DEBUG] Esperando que se renderice el calendario...")
+    await page.wait_for_selector('.vc-pane-container', state='visible', timeout=10000)
     await asyncio.sleep(0.5)
 
-    # Press Tab or click elsewhere to close any date picker that might have opened
-    on_log(f"  [DEBUG] Presionando Tab para cerrar datepicker...")
-    await fecha_desde_input.press("Tab")
+    # Click on the specific day using the ID from HTML
+    day_selector_desde = f'.vc-day.id-{fecha_desde_calendar}'
+    on_log(f"  [DEBUG] Haciendo click en día: {day_selector_desde}")
+    await page.click(day_selector_desde)
     await asyncio.sleep(0.5)
+    on_log(f"  ✓ Fecha desde seleccionada: {fecha_desde}")
 
     # Fecha hasta
-    on_log(f"  [DEBUG] Localizando campo 'Fecha hasta'...")
+    on_log(f"  [DEBUG] Seleccionando fecha hasta en calendario...")
     fecha_hasta_input = page.locator("#datePickerFechasRetencionesHasta__input")
     await fecha_hasta_input.wait_for(state="visible", timeout=10000)
-    on_log(f"  [DEBUG] Click en 'Fecha hasta'...")
+
+    # Click to open calendar
+    on_log(f"  [DEBUG] Abriendo calendario 'Fecha hasta'...")
     await fecha_hasta_input.click()
     await asyncio.sleep(0.5)
 
-    # Clear any existing value first
-    await fecha_hasta_input.fill("")
-    await asyncio.sleep(0.2)
-
-    on_log(f"  [DEBUG] Llenando 'Fecha hasta' con: {fecha_hasta_playwright}")
-    await fecha_hasta_input.fill(fecha_hasta_playwright)
+    # Wait for calendar to render
+    on_log(f"  [DEBUG] Esperando que se renderice el calendario...")
+    await page.wait_for_selector('.vc-pane-container', state='visible', timeout=10000)
     await asyncio.sleep(0.5)
 
-    # Press Tab or Escape to close any date picker
-    on_log(f"  [DEBUG] Presionando Escape para cerrar datepicker...")
-    await fecha_hasta_input.press("Escape")
+    # Click on the specific day using the ID from HTML
+    day_selector_hasta = f'.vc-day.id-{fecha_hasta_calendar}'
+    on_log(f"  [DEBUG] Haciendo click en día: {day_selector_hasta}")
+    await page.click(day_selector_hasta)
     await asyncio.sleep(0.5)
+    on_log(f"  ✓ Fecha hasta seleccionada: {fecha_hasta}")
 
     on_log("✓ Formulario completado")
 
