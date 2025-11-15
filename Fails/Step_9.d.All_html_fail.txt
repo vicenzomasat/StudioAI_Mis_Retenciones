@@ -1,0 +1,860 @@
+<main data-v-58312181="" id="__EVID__301769__EV__e-main__" class="container e-main pb-sm-0 mb-5 mb-sm-0 pt-3 flex-shrink-0 pb-5 content" tabindex="-1" data-element="e-main" data-unobservable="">
+  <div data-v-58312181="" class="">
+    <div class="no-print">
+      <div id="__EVID__512903__EV__e-alert__" class="e-alert alert alert-warning show alert-dismissible" role="alert" tabindex="-1">
+        <span class="e-alert-header">
+          <span class="e-icon-container pe-2">
+            <span class="e-icon material-symbols-rounded" id="__EVID__512903__EV__e-alert___icon">info</span>
+          </span> Podés acceder a la versión anterior del servicio haciendo <button id="__EVID__067625__EV__e-button__" class="btn e-button btn-tertiary btn-sm" type="button" tabindex="0" style="--aec932dc: inline-flex;">
+            <!---->click aquí
+            <!---->
+          </button>
+          <!---->
+          <button type="button" id="__EVID__512903__EV__e-alert___dismiss-button" class="btn-close e-alert-button-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </span>
+        <!---->
+      </div>
+    </div>
+    <div class="">
+      <div class="card">
+        <div class="card-header bg-light py-2 px-3 d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Filtros</h6>
+        </div>
+        <div class="card-body">
+          <div class="d-flex gap-2 align-items-center pills-container">
+            <div class="pill d-inline-flex align-items-center px-3 py-2 bg-light rounded-pill flex-shrink-0">
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-primary">
+                  <b>Tipo:</b> Impositiva </span>
+              </div>
+            </div>
+            <div class="pill d-inline-flex align-items-center px-3 py-2 bg-light rounded-pill flex-shrink-0">
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-primary">
+                  <b>Impuesto:</b> 767 - SICORE - RETENCIONES Y PERCEPC </span>
+              </div>
+            </div>
+            <div class="pill d-inline-flex align-items-center px-3 py-2 bg-light rounded-pill">
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-primary">
+                  <b>Tipo de operación:</b> Retención y/o Percepción </span>
+              </div>
+            </div>
+            <!---->
+            <div class="pill d-inline-flex align-items-center px-3 py-2 bg-light rounded-pill flex-shrink-0">
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-primary">
+                  <b>Fecha de retención y/o percepción:</b> 01/01/2024 - 15/11/2025 </span>
+              </div>
+            </div>
+            <!---->
+            <!---->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="tablaResultados">
+      <div class="importe_retenido pt-4">
+        <div class="row">
+          <div class="col-6"> Importe de retención o percepción total: <span class="importe_retencion_ttoal">$&nbsp;207.758.099,59</span>
+          </div>
+          <div class="col-6 d-flex justify-content-end no-print">
+            <div class="dropdown me-2 no-print">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="btnExportarOtrosFormatos" data-bs-toggle="dropdown" aria-expanded="false">
+                <!----> Exportar
+              </button>
+              <ul class="dropdown-menu" style="">
+                <!---->
+                <li>
+                  <a class="dropdown-item">
+                    <!----> .CSV
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <hr>
+      </div>
+      <div class="">
+        <div>
+          <div id="tablaResultados" class="e-grid-table" align="left" tabindex="-1" style="height: auto; width: 100%; --9e29a17a: var(--e-grey-20); --2318f702: var(--e-grey-90); --16952f1f: 2204px; --fad3c97e: none; --51065ff4: none; --b6cbbaf4: 44.5px; --4f4b9dae: auto; --26ffc584: 45.5px; --cf74e478: 340px; --a475a83e: 1290px; --darkreader-text--9e29a17a: var(--darkreader-text--e-grey-20); --darkreader-bg--2318f702: var(--darkreader-bg--e-grey-90); --darkreader-border--2318f702: var(--darkreader-border--e-grey-90);">
+            <div id="grid-wrapper" style="display: flex; flex-direction: column; height: 100%; width: unset;">
+              <div id="tablaResultados_menu" class="e-grid-table--menu" align="right">
+                <button id="tablaResultados_selectAll" class="btn e-button btn-secondary btn-sm e-button-icon e-grid-table--menu-test" type="button" tabindex="0" style="--aec932dc: inline-flex;">
+                  <span class="e-icon material-symbols-rounded md-sm e-button-icon--left" id="__EVID__006671__EV__e-icon__">check_box</span>Select all
+                  <!---->
+                </button>
+                <button id="tablaResultados_unselectAll" class="btn e-button btn-secondary btn-sm e-button-icon ms-1 e-grid-table--menu-test" type="button" tabindex="0" style="--aec932dc: inline-flex;">
+                  <span class="e-icon material-symbols-rounded md-sm e-button-icon--left" id="__EVID__749474__EV__e-icon__">check_box_outline_blank</span> Unselect all
+                  <!---->
+                </button>
+                <button id="tablaResultados_showHiddenCols" class="btn e-button btn-secondary btn-sm e-button-icon ms-1 e-grid-table--menu-test" disabled="" type="button" tabindex="0" style="--aec932dc: inline-flex;">
+                  <span class="e-icon material-symbols-rounded md-sm e-button-icon--left" id="__EVID__839063__EV__e-icon__">visibility</span>Show hidden cols
+                  <!---->
+                </button>
+                <div class="d-inline ms-1"></div>
+                <div class="btn-group dropdown d-inline ms-1">
+                  <!---->
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-right">
+                    <li class="custom-pading my-1">
+                      <div id="__EVID__482762__EV__e-check__" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_check-visibleCols" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_check-visibleCols_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="boolean" value="true"> Solo columnas visualizadas </label>
+                        </div>
+                      </div>
+                    </li>
+                    <!---->
+                    <!---->
+                    <div align="center" class="mb-2 mt-3">
+                      <div selected="XLSX" _selected="XLSX">
+                        <div class="multiselect e-multi-select e-multi-select-size--sm e-multi-select--no-empty" id="tablaResultados__exportation-format-selector" isrequired="false" labelprop="label" notempty="true" selectedvalue="XLSX">
+                          <div class="multiselect-wrapper" tabindex="0" aria-controls="tablaResultados__exportation-format-selector-multiselect-options" aria-expanded="false" aria-multiselectable="false" role="combobox">
+                            <!-- Search -->
+                            <!--v-if-->
+                            <!-- Tags (with search) -->
+                            <!--v-if-->
+                            <!-- Single label -->
+                            <div class="multiselect-single-label"> FORMATO XLSX</div>
+                            <!-- Multiple label -->
+                            <!--v-if-->
+                            <!-- Placeholder -->
+                            <!--v-if-->
+                            <!-- Spinner -->
+                            <!--v-if-->
+                            <!-- Clear -->
+                            <span aria-hidden="true" tabindex="0" role="button" data-clear="" aria-roledescription="❎" class="multiselect-clear">
+                              <span class="multiselect-clear-icon"></span>
+                            </span>
+                            <!-- Caret -->
+                            <span class="e-icon material-symbols-rounded md-sm icon-multiselect" id="tablaResultados__exportation-format-selector_caret">expand_more</span>
+                          </div>
+                          <!-- Options -->
+                          <div id="tablaResultados__exportation-format-selector-dropdown" class="multiselect-dropdown is-hidden" tabindex="-1">
+                            <ul class="multiselect-options" id="tablaResultados__exportation-format-selector-multiselect-options" role="listbox">
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-CSV" aria-selected="false" aria-label="CSV (Valores delimitados por coma)" role="option">
+                                <div id="tablaResultados_format-selector-CSV" class="format-selector" style="user-select: none;">CSV <br>
+                                  <p class="text-muted">
+                                    <small>Valores delimitados por coma</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-DBF" aria-selected="false" aria-label="DBF (dBASE / Visual FoxPro)" role="option">
+                                <div id="tablaResultados_format-selector-DBF" class="format-selector" style="user-select: none;">DBF <br>
+                                  <p class="text-muted">
+                                    <small>dBASE / Visual FoxPro</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-HTML" aria-selected="false" aria-label="HTML (Lenguaje de etiquetado web)" role="option">
+                                <div id="tablaResultados_format-selector-HTML" class="format-selector" style="user-select: none;">HTML <br>
+                                  <p class="text-muted">
+                                    <small>Lenguaje de etiquetado web</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-ODS" aria-selected="false" aria-label="ODS (Hoja de cálculo OpenDocument)" role="option">
+                                <div id="tablaResultados_format-selector-ODS" class="format-selector" style="user-select: none;">ODS <br>
+                                  <p class="text-muted">
+                                    <small>Hoja de cálculo OpenDocument</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-PDF" aria-selected="false" aria-label="PDF (Formato de contenido portable)" role="option">
+                                <div id="tablaResultados_format-selector-PDF" class="format-selector" style="user-select: none;">PDF <br>
+                                  <p class="text-muted">
+                                    <small>Formato de contenido portable</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-RTF" aria-selected="false" aria-label="RTF (Formato de texto enriquecido)" role="option">
+                                <div id="tablaResultados_format-selector-RTF" class="format-selector" style="user-select: none;">RTF <br>
+                                  <p class="text-muted">
+                                    <small>Formato de texto enriquecido</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option" id="tablaResultados__exportation-format-selector-multiselect-option-SYLK" aria-selected="false" aria-label="SYLK (Enlace simbólico)" role="option">
+                                <div id="tablaResultados_format-selector-SYLK" class="format-selector" style="user-select: none;">SYLK <br>
+                                  <p class="text-muted">
+                                    <small>Enlace simbólico</small>
+                                  </p>
+                                </div>
+                              </li>
+                              <li class="multiselect-option is-selected" data-selected="true" id="tablaResultados__exportation-format-selector-multiselect-option-XLSX" aria-selected="true" aria-label="XLSX (Hoja de cálculo Excel XML)" role="option">
+                                <div id="tablaResultados_format-selector-XLSX" class="format-selector format-selector--active" style="user-select: none;">XLSX <br>
+                                  <p class="text-muted">
+                                    <small>Hoja de cálculo Excel XML</small>
+                                  </p>
+                                </div>
+                              </li>
+                            </ul>
+                            <!--v-if-->
+                            <!--v-if-->
+                            <!--v-if-->
+                          </div>
+                          <!-- Hacky input element to show HTML5 required warning -->
+                          <!--v-if-->
+                          <!-- Native input support -->
+                          <!--v-if-->
+                          <!-- Screen reader assistive text -->
+                          <!--v-if-->
+                          <!-- Create height for empty input -->
+                          <div class="multiselect-spacer"></div>
+                        </div>
+                      </div>
+                      <!---->
+                    </div>
+                  </ul>
+                </div>
+                <!---->
+                <div class="btn-group dropdown d-inline ms-1">
+                  <button id="tablaResultados_col-btn" class="btn e-button btn-outline-primary btn-sm e-button-icon e-button-secondary dropdown-toggle e-grid-table-col-btn" type="button" tabindex="0" data-bs-toggle="dropdown" data-bs-display="static" aria-haspopup="true" aria-expanded="false" style="--aec932dc: inline-flex;">
+                    <span class="e-icon material-symbols-rounded md-sm e-button-icon--left" id="__EVID__769444__EV__e-icon__">visibility</span> COLUMNAS
+                    <!---->
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-right e-grid-table-dropdown-menu-cols">
+                    <div class="e-grid-table-dropdown-menu-cols--toggle-all">
+                      <li class="custom-pading mt-1" value="0">
+                        <div id="tablaResultados_col-check_toggle_all" class="e-check form-check form-check-inline e-check--padding">
+                          <div id="tablaResultados_col-check-item_toggle_all" class="e-check-item form-check form-check-inline  e-check--margin">
+                            <label class="form-check-label">
+                              <input id="tablaResultados_col-check-item_toggle_all_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="boolean" value="false"> Ocultar todas </label>
+                          </div>
+                        </div>
+                      </li>
+                    </div>
+                    <hr>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_0" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_0" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_0_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="cuitAgenteRetencion"> CUIT agente de ret. o per. </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_1" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_1" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_1_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="impuestoRetenido"> Impuesto </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_2" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_2" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_2_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="codigoRegimen"> Régimen </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_3" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_3" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_3_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="fechaRetencion"> Fecha retención o percepción </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_4" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_4" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_4_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="numeroCertificado"> Número de certificado </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_5" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_5" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_5_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="descripcionOperacion"> Tipo de operación </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_6" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_6" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_6_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="importeRetenido"> Importe </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_7" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_7" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_7_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="numeroComprobante"> Número de comprobante </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_8" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_8" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_8_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="fechaComprobante"> Fecha de comprobante </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_9" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_9" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_9_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="descripcionComprobante"> Tipo de comprobante </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_10" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_10" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_10_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="fechaIngreso"> Fecha DJ agente ret. o per. </label>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="custom-pading" value="0">
+                      <div id="tablaResultados_col-check_11" class="e-check form-check form-check-inline e-check--padding">
+                        <div id="tablaResultados_col-check-item_11" class="e-check-item form-check form-check-inline  e-check--margin">
+                          <label class="form-check-label">
+                            <input id="tablaResultados_col-check-item_11_input" class="e-check-item--checker form-check-input" type="checkbox" role="null" tabindex="0" valuetype="object" value="codSeguridad"> Código de seguridad </label>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!---->
+              <div id="tablaResultados--grid" class="" style="height: 100%; width: 100%;">
+                <div>
+                  <!---->
+                  <div id="tablaResultados__table" class="e-grid-table--readonly-primary e-grid-table--header-dark ag-theme-material" columnvisible="function columnVisible(o){}" includehiddencolumnsinquickfilter="false" rowdataupdated="function rowDataUpdated(o){}" suppressheaderfocus="true" tabindex="-1" style="width: 100%; --ag-line-height: 50px;">
+                    <div class="ag-root-wrapper ag-ltr ag-layout-auto-height" role="presentation">
+                      <div class="ag-root-wrapper-body ag-focus-managed ag-layout-auto-height" ref="rootWrapperBody" role="presentation">
+                        <div class="ag-tab-guard ag-tab-guard-top" role="presentation" tabindex="0"></div>
+                        <!--AG-GRID-BODY-->
+                        <div class="ag-root ag-unselectable ag-layout-auto-height" role="grid" ref="gridBody" aria-colcount="12" aria-multiselectable="true" aria-rowcount="11">
+                          <!--AG-HEADER-ROOT-->
+                          <div class="ag-header ag-focus-managed ag-pivot-off" role="presentation" ref="gridHeader" style="height: 46px; min-height: 46px;">
+                            <div class="ag-pinned-left-header ag-hidden" role="presentation" style="width: 0px; max-width: 0px; min-width: 0px;">
+                              <div class="ag-header-row ag-header-row-column" role="row" aria-rowindex="1" style="top: 0px; height: 45px; width: 0px;"></div>
+                            </div>
+                            <div class="ag-header-viewport" role="presentation">
+                              <div class="ag-header-container" ref="eCenterContainer" role="rowgroup" style="width: 2204px; transform: translateX(0px);">
+                                <div class="ag-header-row ag-header-row-column" role="row" aria-rowindex="1" style="top: 0px; height: 45px; width: 2204px;">
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="cuitAgenteRetencion" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 244px; left: 0px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-318-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="1">CUIT agente de ret. o per.</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="impuestoRetenido" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 120px; left: 244px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-322-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="2">Impuesto</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="codigoRegimen" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 120px; left: 364px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-328-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="3">Régimen</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="fechaRetencion" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 160px; left: 484px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-332-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="4">Fecha retención o percepción</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="numeroCertificado" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 221px; left: 644px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-336-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="5">Número de certificado</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="descripcionOperacion" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 200px; left: 865px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-340-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="6">Tipo de operación</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="importeRetenido" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 200px; left: 1065px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-344-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="7">Importe</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="ag-header-cell ag-header-cell-sortable ag-header-cell-wrap-text ag-focus-managed" role="columnheader" tabindex="-1" col-id="numeroComprobante" aria-sort="none" aria-description="Press ENTER to sort. Press CTRL ENTER to open column menu." style="width: 239px; left: 1265px;">
+                                    <div ref="eResize" class="ag-header-cell-resize" role="presentation"></div>
+                                    <div role="presentation" class="ag-labeled ag-label-align-right ag-checkbox ag-input-field ag-header-select-all ag-hidden" aria-hidden="true">
+                                      <div ref="eLabel" class="ag-input-field-label ag-label ag-hidden ag-checkbox-label" role="presentation"></div>
+                                      <div ref="eWrapper" class="ag-wrapper ag-input-wrapper ag-checkbox-input-wrapper" role="presentation">
+                                        <input ref="eInput" class="ag-input-field-input ag-checkbox-input" type="checkbox" id="ag-348-input" tabindex="-1">
+                                      </div>
+                                    </div>
+                                    <div ref="eHeaderCompWrapper" class="ag-header-cell-comp-wrapper" role="presentation">
+                                      <div class="ag-cell-label-container" role="presentation">
+                                        <div ref="eLabel" class="ag-header-cell-label" role="presentation" style="width: fit-content; padding: 0px">
+                                          <span ref="eText" class="ag-header-cell-text" role="columnheader" aria-colindex="8">Número de comprobante</span>
+                                          <span ref="eSortOrder" class="ag-header-icon ag-sort-order ag-hidden"></span>
+                                          <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-asc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-desc" unselectable="on" role="presentation"></span>
+                                          </span>
+                                          <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon ag-hidden">
+                                            <span class="ag-icon ag-icon-none" unselectable="on" role="presentation"></span>
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="ag-pinned-right-header ag-hidden" role="presentation" style="width: 0px; max-width: 0px; min-width: 0px;">
+                              <div class="ag-header-row ag-header-row-column" role="row" aria-rowindex="1" style="top: 0px; height: 45px; width: 0px;"></div>
+                            </div>
+                          </div>
+                          <div class="ag-floating-top" ref="eTop" role="presentation" style="min-height: 0px; height: 0px; display: none; overflow-y: hidden;">
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-left-floating-top ag-hidden" ref="topLeftContainer" name="topLeft" role="presentation"></div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-floating-top-viewport" ref="topCenterContainer" role="presentation" name="topCenter">
+                              <div class="ag-floating-top-container" ref="eContainer" role="presentation" style="width: 2204px; transform: translateX(0px);"></div>
+                            </div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-right-floating-top ag-hidden" ref="topRightContainer" name="topRight" role="presentation"></div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-floating-top-full-width-container" ref="topFullWidthContainer" name="topFullWidth" role="presentation"></div>
+                          </div>
+                          <div class="ag-body-viewport ag-row-no-animation ag-layout-auto-height" ref="eBodyViewport" role="presentation">
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-left-cols-container ag-hidden" ref="leftContainer" name="left" role="rowgroup" style="height: 500px;">
+                              <div comp-id="355" style="top: 0px; height: 50px; --ag-line-height: 46px;" row-index="0" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-first" aria-rowindex="2" aria-label="Press SPACE to select this row." role="row" row-id="0"></div>
+                              <div comp-id="356" style="top: 50px; height: 50px; --ag-line-height: 46px;" row-index="1" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="3" aria-label="Press SPACE to select this row." role="row" row-id="1"></div>
+                              <div comp-id="357" style="top: 100px; height: 50px; --ag-line-height: 46px;" row-index="2" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="4" aria-label="Press SPACE to select this row." role="row" row-id="2"></div>
+                              <div comp-id="358" style="top: 150px; height: 50px; --ag-line-height: 46px;" row-index="3" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="5" aria-label="Press SPACE to select this row." role="row" row-id="3"></div>
+                              <div comp-id="359" style="top: 200px; height: 50px; --ag-line-height: 46px;" row-index="4" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="6" aria-label="Press SPACE to select this row." role="row" row-id="4"></div>
+                              <div comp-id="360" style="top: 250px; height: 50px; --ag-line-height: 46px;" row-index="5" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="7" aria-label="Press SPACE to select this row." role="row" row-id="5"></div>
+                              <div comp-id="361" style="top: 300px; height: 50px; --ag-line-height: 46px;" row-index="6" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="8" aria-label="Press SPACE to select this row." role="row" row-id="6"></div>
+                              <div comp-id="362" style="top: 350px; height: 50px; --ag-line-height: 46px;" row-index="7" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="9" aria-label="Press SPACE to select this row." role="row" row-id="7"></div>
+                              <div comp-id="363" style="top: 400px; height: 50px; --ag-line-height: 46px;" row-index="8" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="10" aria-label="Press SPACE to select this row." role="row" row-id="8"></div>
+                              <div comp-id="364" style="top: 450px; height: 50px; --ag-line-height: 46px;" row-index="9" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-last" aria-rowindex="11" aria-label="Press SPACE to select this row." role="row" row-id="9"></div>
+                            </div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-center-cols-clipper" ref="centerContainer" role="presentation" name="center" style="height: 500px;">
+                              <div class="ag-center-cols-viewport" ref="eViewport" role="presentation" style="height: calc(100% + 15px);">
+                                <div class="ag-center-cols-container" ref="eContainer" role="rowgroup" style="width: 2204px; height: 500px;">
+                                  <div comp-id="365" style="top: 0px; height: 50px; --ag-line-height: 46px;" row-index="0" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-first" aria-rowindex="2" aria-label="Press SPACE to select this row." role="row" row-id="0">
+                                    <div comp-id="376" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30639453738</div>
+                                    <div comp-id="377" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="378" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="379" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="380" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">178744</div>
+                                    <div comp-id="381" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="382" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 1.103,84</div>
+                                    <div comp-id="383" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">426403044599</div>
+                                  </div>
+                                  <div comp-id="366" style="top: 50px; height: 50px; --ag-line-height: 46px;" row-index="1" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="3" aria-label="Press SPACE to select this row." role="row" row-id="1">
+                                    <div comp-id="385" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30692432661</div>
+                                    <div comp-id="386" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="387" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="388" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="389" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">24778</div>
+                                    <div comp-id="390" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="391" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 4.432,08</div>
+                                    <div comp-id="392" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000002560</div>
+                                  </div>
+                                  <div comp-id="367" style="top: 100px; height: 50px; --ag-line-height: 46px;" row-index="2" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="4" aria-label="Press SPACE to select this row." role="row" row-id="2">
+                                    <div comp-id="394" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500010084</div>
+                                    <div comp-id="395" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="396" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="397" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="398" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">1120096</div>
+                                    <div comp-id="399" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="400" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 119,71</div>
+                                    <div comp-id="401" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">2121920311</div>
+                                  </div>
+                                  <div comp-id="368" style="top: 150px; height: 50px; --ag-line-height: 46px;" row-index="3" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="5" aria-label="Press SPACE to select this row." role="row" row-id="3">
+                                    <div comp-id="403" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="404" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="405" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="406" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="407" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">2860</div>
+                                    <div comp-id="408" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="409" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 253,17</div>
+                                    <div comp-id="410" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401991014</div>
+                                  </div>
+                                  <div comp-id="369" style="top: 200px; height: 50px; --ag-line-height: 46px;" row-index="4" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="6" aria-label="Press SPACE to select this row." role="row" row-id="4">
+                                    <div comp-id="412" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="413" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="414" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="415" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="416" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">4474</div>
+                                    <div comp-id="417" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="418" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 777,03</div>
+                                    <div comp-id="419" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401993880</div>
+                                  </div>
+                                  <div comp-id="370" style="top: 250px; height: 50px; --ag-line-height: 46px;" row-index="5" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="7" aria-label="Press SPACE to select this row." role="row" row-id="5">
+                                    <div comp-id="421" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="422" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="423" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="424" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="425" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">4477</div>
+                                    <div comp-id="426" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="427" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 331,14</div>
+                                    <div comp-id="428" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401993884</div>
+                                  </div>
+                                  <div comp-id="371" style="top: 300px; height: 50px; --ag-line-height: 46px;" row-index="6" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="8" aria-label="Press SPACE to select this row." role="row" row-id="6">
+                                    <div comp-id="430" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="431" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="432" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="433" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="434" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">4479</div>
+                                    <div comp-id="435" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="436" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 253,17</div>
+                                    <div comp-id="437" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401993888</div>
+                                  </div>
+                                  <div comp-id="372" style="top: 350px; height: 50px; --ag-line-height: 46px;" row-index="7" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="9" aria-label="Press SPACE to select this row." role="row" row-id="7">
+                                    <div comp-id="439" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="440" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="441" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="442" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="443" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">6341</div>
+                                    <div comp-id="444" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="445" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 420,42</div>
+                                    <div comp-id="446" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401998007</div>
+                                  </div>
+                                  <div comp-id="373" style="top: 400px; height: 50px; --ag-line-height: 46px;" row-index="8" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="10" aria-label="Press SPACE to select this row." role="row" row-id="8">
+                                    <div comp-id="448" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="449" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="450" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="451" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="452" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">8866</div>
+                                    <div comp-id="453" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="454" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 1.034,82</div>
+                                    <div comp-id="455" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401998353</div>
+                                  </div>
+                                  <div comp-id="374" style="top: 450px; height: 50px; --ag-line-height: 46px;" row-index="9" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-last" aria-rowindex="11" aria-label="Press SPACE to select this row." role="row" row-id="9">
+                                    <div comp-id="457" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="1" col-id="cuitAgenteRetencion" role="gridcell" style="left: 0px; width: 244px; display: flex; justify-content: left;">30500064478</div>
+                                    <div comp-id="458" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="2" col-id="impuestoRetenido" role="gridcell" style="left: 244px; width: 120px; display: flex; justify-content: left;">767</div>
+                                    <div comp-id="459" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="3" col-id="codigoRegimen" role="gridcell" style="left: 364px; width: 120px; display: flex; justify-content: left;">493</div>
+                                    <div comp-id="460" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="4" col-id="fechaRetencion" role="gridcell" style="left: 484px; width: 160px; display: flex; justify-content: left;">02/01/2024</div>
+                                    <div comp-id="461" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="5" col-id="numeroCertificado" role="gridcell" style="left: 644px; width: 221px; display: flex; justify-content: left;">8556</div>
+                                    <div comp-id="462" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text texto-centrado" aria-colindex="6" col-id="descripcionOperacion" role="gridcell" style="left: 865px; width: 200px; display: flex; justify-content: left;">PERCEPCION</div>
+                                    <div comp-id="463" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="7" col-id="importeRetenido" role="gridcell" style="left: 1065px; width: 200px; display: flex; justify-content: left;"> $ 1.034,82</div>
+                                    <div comp-id="464" class="ag-cell-value ag-cell ag-cell-not-inline-editing ag-cell-normal-height ag-cell-wrap-text" aria-colindex="8" col-id="numeroComprobante" role="gridcell" style="left: 1265px; width: 239px; display: flex; justify-content: left;">000401995911</div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-right-cols-container ag-hidden" ref="rightContainer" name="right" role="rowgroup" style="height: 500px;">
+                              <div comp-id="375" style="top: 0px; height: 50px; --ag-line-height: 46px;" row-index="0" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-first" aria-rowindex="2" aria-label="Press SPACE to select this row." role="row" row-id="0"></div>
+                              <div comp-id="384" style="top: 50px; height: 50px; --ag-line-height: 46px;" row-index="1" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="3" aria-label="Press SPACE to select this row." role="row" row-id="1"></div>
+                              <div comp-id="393" style="top: 100px; height: 50px; --ag-line-height: 46px;" row-index="2" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="4" aria-label="Press SPACE to select this row." role="row" row-id="2"></div>
+                              <div comp-id="402" style="top: 150px; height: 50px; --ag-line-height: 46px;" row-index="3" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="5" aria-label="Press SPACE to select this row." role="row" row-id="3"></div>
+                              <div comp-id="411" style="top: 200px; height: 50px; --ag-line-height: 46px;" row-index="4" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="6" aria-label="Press SPACE to select this row." role="row" row-id="4"></div>
+                              <div comp-id="420" style="top: 250px; height: 50px; --ag-line-height: 46px;" row-index="5" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="7" aria-label="Press SPACE to select this row." role="row" row-id="5"></div>
+                              <div comp-id="429" style="top: 300px; height: 50px; --ag-line-height: 46px;" row-index="6" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="8" aria-label="Press SPACE to select this row." role="row" row-id="6"></div>
+                              <div comp-id="438" style="top: 350px; height: 50px; --ag-line-height: 46px;" row-index="7" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="9" aria-label="Press SPACE to select this row." role="row" row-id="7"></div>
+                              <div comp-id="447" style="top: 400px; height: 50px; --ag-line-height: 46px;" row-index="8" class="ag-row-even ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute" aria-rowindex="10" aria-label="Press SPACE to select this row." role="row" row-id="8"></div>
+                              <div comp-id="456" style="top: 450px; height: 50px; --ag-line-height: 46px;" row-index="9" class="ag-row-odd ag-row-no-focus ag-row ag-row-level-0 ag-row-position-absolute ag-row-last" aria-rowindex="11" aria-label="Press SPACE to select this row." role="row" row-id="9"></div>
+                            </div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-full-width-container" ref="fullWidthContainer" name="fullWidth" role="presentation" style="height: 500px;"></div>
+                          </div>
+                          <div class="ag-sticky-top" ref="eStickyTop" role="presentation" style="top: 46px; width: 100%;">
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-left-sticky-top ag-hidden" ref="stickyTopLeftContainer" name="stickyTopLeft" role="presentation"></div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-sticky-top-viewport" ref="stickyTopCenterContainer" role="presentation" name="stickyTopCenter">
+                              <div class="ag-sticky-top-container" ref="eContainer" role="presentation" style="width: 2204px; transform: translateX(0px);"></div>
+                            </div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-right-sticky-top ag-hidden" ref="stickyTopRightContainer" name="stickyTopRight" role="presentation"></div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-sticky-top-full-width-container" ref="stickyTopFullWidthContainer" name="stickyTopFullWidth" role="presentation"></div>
+                          </div>
+                          <div class="ag-floating-bottom" ref="eBottom" role="presentation" style="min-height: 0px; height: 0px; display: none; overflow-y: hidden;">
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-left-floating-bottom ag-hidden" ref="bottomLeftContainer" name="bottomLeft" role="presentation"></div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-floating-bottom-viewport" ref="bottomCenterContainer" role="presentation" name="bottomCenter">
+                              <div class="ag-floating-bottom-container" ref="eContainer" role="presentation" style="width: 2204px; transform: translateX(0px);"></div>
+                            </div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-pinned-right-floating-bottom ag-hidden" ref="bottomRightContainer" name="bottomRight" role="presentation"></div>
+                            <!--AG-ROW-CONTAINER-->
+                            <div class="ag-floating-bottom-full-width-container" ref="bottomFullWidthContainer" name="bottomFullWidth" role="presentation"></div>
+                          </div>
+                          <!--AG-FAKE-HORIZONTAL-SCROLL-->
+                          <div>
+                            <div class="ag-body-horizontal-scroll" aria-hidden="true" style="height: 15px; max-height: 15px; min-height: 15px;">
+                              <div class="ag-horizontal-left-spacer ag-scroller-corner" ref="eLeftSpacer" style="width: 0px; max-width: 0px; min-width: 0px;"></div>
+                              <div class="ag-body-horizontal-scroll-viewport" ref="eViewport" style="height: 15px; max-height: 15px; min-height: 15px;">
+                                <div class="ag-body-horizontal-scroll-container" ref="eContainer" style="height: 15px; max-height: 15px; min-height: 15px; width: 2204px;"></div>
+                              </div>
+                              <div class="ag-horizontal-right-spacer ag-scroller-corner" ref="eRightSpacer" style="width: 0px; max-width: 0px; min-width: 0px;"></div>
+                            </div>
+                          </div>
+                          <!--AG-OVERLAY-WRAPPER-->
+                          <div class="ag-overlay ag-hidden" aria-hidden="true">
+                            <div class="ag-overlay-panel">
+                              <div class="ag-overlay-wrapper ag-overlay-no-rows-wrapper ag-layout-auto-height" ref="eOverlayWrapper"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="ag-tab-guard ag-tab-guard-bottom" role="presentation" tabindex="0"></div>
+                      </div>
+                      <!--AG-PAGINATION-->
+                      <div class="ag-paging-panel ag-unselectable ag-hidden" id="ag-313">
+                        <span class="ag-paging-row-summary-panel" role="status">
+                          <span id="ag-313-first-row" ref="lbFirstRowOnPage" class="ag-paging-row-summary-panel-number"></span>
+                          <span id="ag-313-to">to</span>
+                          <span id="ag-313-last-row" ref="lbLastRowOnPage" class="ag-paging-row-summary-panel-number"></span>
+                          <span id="ag-313-of">of</span>
+                          <span id="ag-313-row-count" ref="lbRecordCount" class="ag-paging-row-summary-panel-number"></span>
+                        </span>
+                        <span class="ag-paging-page-summary-panel" role="presentation">
+                          <div ref="btFirst" class="ag-paging-button" role="button" aria-label="First Page">
+                            <span class="ag-icon ag-icon-first" unselectable="on" role="presentation"></span>
+                          </div>
+                          <div ref="btPrevious" class="ag-paging-button" role="button" aria-label="Previous Page">
+                            <span class="ag-icon ag-icon-previous" unselectable="on" role="presentation"></span>
+                          </div>
+                          <span class="ag-paging-description" role="status">
+                            <span id="ag-313-start-page">Page</span>
+                            <span id="ag-313-start-page-number" ref="lbCurrent" class="ag-paging-number"></span>
+                            <span id="ag-313-of-page">of</span>
+                            <span id="ag-313-of-page-number" ref="lbTotal" class="ag-paging-number"></span>
+                          </span>
+                          <div ref="btNext" class="ag-paging-button" role="button" aria-label="Next Page">
+                            <span class="ag-icon ag-icon-next" unselectable="on" role="presentation"></span>
+                          </div>
+                          <div ref="btLast" class="ag-paging-button" role="button" aria-label="Last Page">
+                            <span class="ag-icon ag-icon-last" unselectable="on" role="presentation"></span>
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <!---->
+                </div>
+                <div align="center" class="text-center p-3 justify-content-center" style="align-items: center; display: none; margin-top: -561px; position: relative; z-index: 1; height: 561px;">
+                  <div style="background-color: white; border-radius: 40px; box-shadow: white 0px 0px 30px 20px; margin-top: 80px; --darkreader-inline-bgcolor: var(--darkreader-background-ffffff, #202223); --darkreader-inline-boxshadow: var(--darkreader-background-ffffff, #202223) 0px 0px 30px 20px;" data-darkreader-inline-bgcolor="" data-darkreader-inline-boxshadow="">
+                    <div id="__EVID__929639__EV__e-loading-circular__" class="e-loading-circular m-2" variant="primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" color="#139ED9" width="48" height="48" viewBox="0 0 200 200" data-darkreader-inline-color="" style="--darkreader-inline-color: var(--darkreader-text-139ed9, #3aa2ce);">
+                        <defs>
+                          <linearGradient id="a" x1="-2.328" x2="143.749" y1="-4.655" y2="-4.655" gradientTransform="matrix(1.32316 0 0 .66154 6.444 6.439)" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="currentColor" stop-opacity="0" data-darkreader-inline-stopcolor="" style="--darkreader-inline-stopcolor: currentColor;"></stop>
+                            <stop offset="100%" stop-color="currentColor" stop-opacity=".5" data-darkreader-inline-stopcolor="" style="--darkreader-inline-stopcolor: currentColor;"></stop>
+                          </linearGradient>
+                          <linearGradient id="b" x1="-2.328" x2="143.749" y1="141.421" y2="141.421" gradientTransform="matrix(1.32316 0 0 .66154 6.444 6.439)" gradientUnits="userSpaceOnUse">
+                            <stop offset="0%" stop-color="currentColor" data-darkreader-inline-stopcolor="" style="--darkreader-inline-stopcolor: currentColor;"></stop>
+                            <stop offset="100%" stop-color="currentColor" stop-opacity=".5" data-darkreader-inline-stopcolor="" style="--darkreader-inline-stopcolor: currentColor;"></stop>
+                          </linearGradient>
+                        </defs>
+                        <g stroke-width="20.133">
+                          <path stroke="url(#a)" d="M10.186 99.995a89.819 89.814 0 0 1 179.638 0" transform="matrix(1.00112 0 0 1.0013 -.115 -.134)"></path>
+                          <path stroke="url(#b)" d="M189.824 99.995a89.819 89.814 0 0 1-179.638 0" transform="matrix(1.00112 0 0 1.0013 -.115 -.134)"></path>
+                          <path stroke="currentColor" stroke-linecap="round" d="M10.186 99.995a89.819 89.814 0 0 1 0-1.871" transform="matrix(1.00112 0 0 1.0013 -.115 -.134)" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: currentColor;"></path>
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                <div id="tablaResultados--dropdown-container" class="e-grid-table--dropdown-container" style="position: absolute;"></div>
+                <!---->
+                <div id="tablaResultados" class="e-paginator e-paginator-grid pb-2 pt-4" disabledfirstpage="true" disabledlastpage="false">
+                  <nav role="menubar" aria-label="Paginación">
+                    <div class="rowInfo">
+                      <div> Mostrando <span class="e-icon material-symbols-rounded text-primary e-icon-no-fill mt-1 e-icon--expand" id="tablaResultados_icon-expand" style="display: inline-block; position: absolute; cursor: pointer; margin-left: 27px;">expand_more</span>
+                        <select id="tablaResultados-page-size" class="ms-1 form-control form-control-sm e-input--paginator" style="display: inline-block; cursor: pointer; width: 50px;">
+                          <option id="tablaResultados-page-size-option-5" value="5"> 5 </option>
+                          <option id="tablaResultados-page-size-option-10" value="10"> 10 </option>
+                          <option id="tablaResultados-page-size-option-20" value="20"> 20 </option>
+                          <option id="tablaResultados-page-size-option-50" value="50"> 50 </option>
+                          <option id="tablaResultados-page-size-option-100" value="100"> 100 </option>
+                        </select>
+                        <div class="ms-1" id="tablaResultados-page-size-ending-label" style="display: inline-block;"> &nbsp;filas </div>
+                        <template style="margin-left: 0px;"></template>
+                        <!---->
+                      </div>
+                      <ul class="pagination justify-content-center align-items-center ul">
+                        <!---->
+                        <!---->
+                        <a class="page-item e-paginator-page-item prev-page disabled pe-none e-paginator-a-sm" tabindex="-1" aria-disabled="true" href="#" id="tablaResultados-prevPage">
+                          <span class="e-icon material-symbols-rounded md-md editable page-link prev-page" id="__EVID__619848__EV__e-icon__">chevron_left</span>
+                        </a>
+                        <!---->
+                        <!---->
+                        <span id="tablaResultados-editablePageActive-info" class="">1</span>
+                        <a class="page-item e-paginator-page-item next-page e-paginator-a-sm" aria-disabled="false" href="#" id="tablaResultados-nextPage">
+                          <span class="e-icon material-symbols-rounded md-md editable page-link next-page" id="__EVID__306874__EV__e-icon__">chevron_right</span>
+                        </a>
+                        <!---->
+                        <!---->
+                      </ul>
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!---->
+          <!---->
+        </div>
+      </div>
+      <div class="align_derecha">
+        <button id="btnNuevaBusqueda" class="btn e-button btn-outline-primary e-button-secondary" type="button" tabindex="0" style="--aec932dc: inline-flex;">
+          <!----> Volver a consultar
+          <!---->
+        </button>
+      </div>
+    </div>
+  </div>
+</main>

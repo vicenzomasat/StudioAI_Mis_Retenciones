@@ -1,0 +1,28 @@
+<div data-v-f1c89f8c="" class="col-12 col-md-6">
+  <div data-v-f1c89f8c="" id="datePickerFechasRetencionesHasta" class="e-date-picker" type="date" style="--5f52a132: #333; --59fcc742: block; --3d876aba: none; --darkreader-border--5f52a132: var(--darkreader-border-333333, #70695f);">
+    <div id="datePickerFechasRetencionesHasta_element" class="" columns="1" isexpanded="false" timeaccuracy="2" hidetimeheader="false">
+      <div class="row gx-0">
+        <div id="datePickerFechasRetencionesHasta__single" class="e-form-group mb-3 col-12 position-relative" role="group">
+          <label for="datePickerFechasRetencionesHasta__input" id="datePickerFechasRetencionesHasta__single-label" class="form-label"></label>
+          <div class="input-group">
+            <div for="datePickerFechasRetencionesHasta__input" class="form-label e-input--container unlabeled" style="--35a272d4: regular;">
+              <!---->
+              <!---->
+              <!---->
+              <input aria-invalid="false" aria-required="false" autocomplete="off" class="e-input form-control form-control-md e-date-picker-input" id="datePickerFechasRetencionesHasta__input" maxlength="-1" minlength="-1" placeholder="DD/MM/AAAA" type="text" tabindex="0" size="1">
+            </div>
+            <!---->
+            <!---->
+            <!---->
+          </div>
+          <!---->
+          <div id="datePickerFechasRetencionesHasta__single-description" class="form-text">Fecha hasta</div>
+        </div>
+        <!---->
+      </div>
+      <div class="vc-popover-content-wrapper is-interactive" placement="bottom-start" style="margin: 0px;">
+        <!---->
+      </div>
+    </div>
+  </div>
+</div>
