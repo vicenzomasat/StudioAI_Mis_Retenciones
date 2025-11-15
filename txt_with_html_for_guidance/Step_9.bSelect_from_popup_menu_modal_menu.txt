@@ -1,0 +1,15 @@
+<div id="modal-sinresultados_content" class="modal-content">
+  <div id="modal-sinresultados_header" class="modal-header">
+    <h4 id="modal-sinresultados_title" class="modal-title">
+      <!----> Exportación en proceso
+    </h4>
+    <button id="modal-sinresultados_btnClose" type="button" class="btn-close e-modal__close btn-close-grey-40" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <hr>
+  <div id="modal-sinresultados_body" class="modal-body"> Podés ver su progreso y descargar el archivo csv desde la pestaña de consultas exportadas, puede demorar hasta 2 horas. </div>
+  <hr>
+  <div id="modal-sinresultados_footer" class="modal-footer gap-2">
+    <button id="modal-sinresultados_btnCancel" class="btn btn-outline-primary" type="button" data-bs-dismiss="modal" size="md" variant="outline-primary">Nueva consulta</button>
+    <button id="modal-sinresultados_btnOK" type="button" class="btn btn-primary" size="md">Ver archivo</button>
+  </div>
+</div>
