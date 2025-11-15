@@ -144,6 +144,31 @@ def validar_rango_fecha(fecha_desde: str, fecha_hasta: str) -> Tuple[bool, str]:
 def now_ts() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+def convert_date_format_for_playwright(date_str: str) -> str:
+    """Convert date from dd/mm/yyyy (UI format) to mm/dd/yyyy (Playwright format).
+
+    Args:
+        date_str: Date string in format dd/mm/yyyy (e.g., "31/12/2024")
+
+    Returns:
+        Date string in format mm/dd/yyyy (e.g., "12/31/2024")
+
+    Example:
+        >>> convert_date_format_for_playwright("01/01/2024")
+        "01/01/2024"
+        >>> convert_date_format_for_playwright("31/12/2024")
+        "12/31/2024"
+    """
+    try:
+        # Parse dd/mm/yyyy
+        day, month, year = date_str.split("/")
+        # Return mm/dd/yyyy
+        playwright_format = f"{month}/{day}/{year}"
+        return playwright_format
+    except Exception as e:
+        logger.warning(f"Error converting date format '{date_str}': {e}. Returning original.")
+        return date_str
+
 # ---------------- Checkpoint System ---------------- #
 
 @dataclass
@@ -397,6 +422,11 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     # 3. Fill dates
     on_log(f"Completando fechas: {fecha_desde} - {fecha_hasta}...")
 
+    # Convert dates from dd/mm/yyyy (UI format) to mm/dd/yyyy (Playwright format)
+    fecha_desde_playwright = convert_date_format_for_playwright(fecha_desde)
+    fecha_hasta_playwright = convert_date_format_for_playwright(fecha_hasta)
+    on_log(f"  [DEBUG] Fechas convertidas para Playwright: {fecha_desde_playwright} - {fecha_hasta_playwright}")
+
     # Fecha desde
     on_log(f"  [DEBUG] Localizando campo 'Fecha desde'...")
     fecha_desde_input = page.locator("#datePickerFechasRetencionesDesde__input")
@@ -409,8 +439,8 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     await fecha_desde_input.fill("")
     await asyncio.sleep(0.2)
 
-    on_log(f"  [DEBUG] Llenando 'Fecha desde' con: {fecha_desde}")
-    await fecha_desde_input.fill(fecha_desde)
+    on_log(f"  [DEBUG] Llenando 'Fecha desde' con: {fecha_desde_playwright}")
+    await fecha_desde_input.fill(fecha_desde_playwright)
     await asyncio.sleep(0.5)
 
     # Press Tab or click elsewhere to close any date picker that might have opened
@@ -430,8 +460,8 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     await fecha_hasta_input.fill("")
     await asyncio.sleep(0.2)
 
-    on_log(f"  [DEBUG] Llenando 'Fecha hasta' con: {fecha_hasta}")
-    await fecha_hasta_input.fill(fecha_hasta)
+    on_log(f"  [DEBUG] Llenando 'Fecha hasta' con: {fecha_hasta_playwright}")
+    await fecha_hasta_input.fill(fecha_hasta_playwright)
     await asyncio.sleep(0.5)
 
     # Press Tab or Escape to close any date picker
@@ -483,59 +513,86 @@ async def _export_csv(page, on_log=print):
     on_log("  [DEBUG] Click en opción '.CSV'...")
     csv_option = page.locator(".dropdown-menu a.dropdown-item:has-text('.CSV')").first
     await csv_option.click()
-    await asyncio.sleep(2)
+
+    # Wait longer for the modal to appear (it takes 3-5 seconds)
+    on_log("  [DEBUG] Esperando a que aparezca el modal de exportación (puede tomar 5-7 segundos)...")
+    await asyncio.sleep(4)
 
     on_log("✓ Click en CSV completado - exportación iniciada")
 
 async def _handle_export_popup(page, on_log=print):
     """Navigate to 'Consultas exportadas' tab after export.
 
-    NOTE: AFIP changed their UI - the modal popup NO LONGER APPEARS after clicking CSV export.
-    Instead, we need to manually navigate to the 'Consultas exportadas' tab.
+    NOTE: The modal popup usually appears after 3-5 seconds after clicking CSV export.
+    We need to wait for it and click "Ver archivo" button.
     """
     on_log("[DEBUG] Verificando si aparece popup de exportación...")
 
-    # Give a short time to see if popup appears (but it probably won't)
+    # Try multiple selectors for the modal with extended timeout
     modal_appeared = False
-    try:
-        await page.wait_for_selector("#modal-sinresultados_content, .modal-content", timeout=3000)
-        modal_appeared = True
-        on_log("✓ Popup apareció (comportamiento antiguo)")
-    except TimeoutError:
-        on_log("  [DEBUG] Popup NO apareció (comportamiento nuevo esperado)")
+    modal_selectors = [
+        "#modal-sinresultados",  # Main modal container
+        "#modal-sinresultados_content",  # Modal content
+        ".modal.show",  # Bootstrap modal with show class
+        ".modal-content",  # Generic modal content
+    ]
+
+    for idx, selector in enumerate(modal_selectors, 1):
+        try:
+            on_log(f"  [DEBUG] Probando selector de modal #{idx}: {selector} (timeout: 10s)")
+            await page.wait_for_selector(selector, state="visible", timeout=10000)
+            modal_appeared = True
+            on_log(f"✓ Popup apareció con selector: {selector}")
+            break
+        except TimeoutError:
+            on_log(f"  [DEBUG] Selector #{idx} timeout: {selector}")
+            continue
+
+    if not modal_appeared:
+        on_log("  [DEBUG] Popup NO apareció después de probar todos los selectores")
 
     if modal_appeared:
-        # Old behavior: popup appeared, click "Ver archivo" button
+        # Modal appeared, click "Ver archivo" button
         on_log("Buscando botón 'Ver archivo' en popup...")
 
         selectors_to_try = [
-            "#modal-sinresultados_btnOK",
-            "#modal-sinresultados_footer button.btn.btn-primary",
-            ".modal-content button:has-text('Ver archivo')",
-            "button:has-text('Ver archivo')",
+            "#modal-sinresultados_btnOK",  # Most specific
+            "#modal-sinresultados_footer button.btn-primary",  # In footer
+            "#modal-sinresultados button.btn-primary",  # Anywhere in modal
+            ".modal-content button.btn-primary",  # Generic modal
+            "button:has-text('Ver archivo')",  # By text
+            ".modal.show button:has-text('Ver archivo')",  # In visible modal by text
         ]
 
         ver_archivo_btn = None
         for idx, selector in enumerate(selectors_to_try, 1):
             try:
+                on_log(f"  [DEBUG] Probando selector de botón #{idx}: {selector}")
                 candidate = page.locator(selector).first
-                if await candidate.count() > 0:
-                    await candidate.wait_for(state="visible", timeout=2000)
+                count = await candidate.count()
+                on_log(f"  [DEBUG] Selector #{idx} encontró {count} elemento(s)")
+
+                if count > 0:
+                    await candidate.wait_for(state="visible", timeout=5000)
                     ver_archivo_btn = candidate
-                    on_log(f"✓ Botón encontrado: {selector}")
+                    on_log(f"✓ Botón 'Ver archivo' encontrado con selector #{idx}: {selector}")
                     break
-            except Exception:
+            except Exception as e:
+                on_log(f"  [DEBUG] Selector #{idx} falló: {e}")
                 continue
 
         if ver_archivo_btn:
             await ver_archivo_btn.scroll_into_view_if_needed()
             await asyncio.sleep(0.5)
-            on_log("Click en 'Ver archivo'...")
+            on_log("Haciendo click en botón 'Ver archivo'...")
             await ver_archivo_btn.click()
+            on_log("  [DEBUG] Click realizado, esperando navegación...")
             await page.wait_for_load_state("networkidle", timeout=20000)
             await asyncio.sleep(2)
             on_log("✓ Navegado a 'Consultas exportadas' (vía popup)")
             return
+        else:
+            on_log("⚠ No se encontró el botón 'Ver archivo' con ningún selector. Intentando navegación manual...")
 
     # New behavior (default): No popup, manually navigate to "Consultas exportadas" tab
     on_log("Navegando manualmente a tab 'Consultas exportadas'...")
