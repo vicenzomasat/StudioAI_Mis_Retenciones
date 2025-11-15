@@ -1,0 +1,300 @@
+<div class="vc-popover-content-wrapper is-interactive" placement="bottom-start" style="margin: 0px; position: absolute; inset: auto auto 0px 0px; transform: translate(684px, -300px);" data-popper-placement="top-start">
+  <div tabindex="-1" class="vc-popover-content direction-top vc-container" style="--slide-translate: 15px; --slide-duration: 0.15s;">
+    <div data-helptext="Press the arrow keys to navigate by day, Home and End to navigate to week ends, PageUp and PageDown to navigate by month, Alt+PageUp and Alt+PageDown to navigate by year" class="vc-container vc-blue" id="datePickerFechasRetencionesHasta_element" timeaccuracy="2" hidetimeheader="false">
+      <div class="vc-popover-content-wrapper">
+        <!---->
+      </div>
+      <div class="vc-pane-container">
+        <div id="datePickerFechasRetencionesHasta_element" class="vc-pane-layout" timeaccuracy="2" hidetimeheader="false" style="grid-template-columns: repeat(1, 1fr);">
+          <div class="vc-pane row-from-end-1 column-from-end-1">
+            <div class="vc-header align-center">
+              <div class="vc-title">January 2024</div>
+            </div>
+            <div class="vc-weeks">
+              <div class="vc-weekday">S</div>
+              <div class="vc-weekday">M</div>
+              <div class="vc-weekday">T</div>
+              <div class="vc-weekday">W</div>
+              <div class="vc-weekday">T</div>
+              <div class="vc-weekday">F</div>
+              <div class="vc-weekday">S</div>
+              <div class="vc-day id-2023-12-31 day-31 day-from-end-1 weekday-1 weekday-position-1 weekday-ordinal-5 weekday-ordinal-from-end-1 week-6 week-from-end-1 in-prev-month on-top on-left vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Sunday, December 31, 2023" aria-disabled="true" role="button" class="vc-day-content vc-focusable is-disabled">31</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-01 day-1 day-from-end-31 weekday-2 weekday-position-2 weekday-ordinal-1 weekday-ordinal-from-end-5 week-1 week-from-end-5 is-first-day in-month on-top vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Monday, January 1, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">1</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-02 day-2 day-from-end-30 weekday-3 weekday-position-3 weekday-ordinal-1 weekday-ordinal-from-end-5 week-1 week-from-end-5 in-month on-top vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Tuesday, January 2, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">2</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-03 day-3 day-from-end-29 weekday-4 weekday-position-4 weekday-ordinal-1 weekday-ordinal-from-end-5 week-1 week-from-end-5 in-month on-top vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Wednesday, January 3, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">3</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-04 day-4 day-from-end-28 weekday-5 weekday-position-5 weekday-ordinal-1 weekday-ordinal-from-end-4 week-1 week-from-end-5 in-month on-top vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Thursday, January 4, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">4</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-05 day-5 day-from-end-27 weekday-6 weekday-position-6 weekday-ordinal-1 weekday-ordinal-from-end-4 week-1 week-from-end-5 in-month on-top vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Friday, January 5, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">5</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-06 day-6 day-from-end-26 weekday-7 weekday-position-7 weekday-ordinal-1 weekday-ordinal-from-end-4 week-1 week-from-end-5 in-month on-top on-right vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Saturday, January 6, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">6</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-07 day-7 day-from-end-25 weekday-1 weekday-position-1 weekday-ordinal-1 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-month on-left vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Sunday, January 7, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">7</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-08 day-8 day-from-end-24 weekday-2 weekday-position-2 weekday-ordinal-2 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Monday, January 8, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">8</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-09 day-9 day-from-end-23 weekday-3 weekday-position-3 weekday-ordinal-2 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Tuesday, January 9, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">9</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-10 day-10 day-from-end-22 weekday-4 weekday-position-4 weekday-ordinal-2 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Wednesday, January 10, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">10</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-11 day-11 day-from-end-21 weekday-5 weekday-position-5 weekday-ordinal-2 weekday-ordinal-from-end-3 week-2 week-from-end-4 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Thursday, January 11, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">11</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-12 day-12 day-from-end-20 weekday-6 weekday-position-6 weekday-ordinal-2 weekday-ordinal-from-end-3 week-2 week-from-end-4 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Friday, January 12, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">12</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-13 day-13 day-from-end-19 weekday-7 weekday-position-7 weekday-ordinal-2 weekday-ordinal-from-end-3 week-2 week-from-end-4 in-month on-right vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Saturday, January 13, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">13</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-14 day-14 day-from-end-18 weekday-1 weekday-position-1 weekday-ordinal-2 weekday-ordinal-from-end-3 week-3 week-from-end-3 in-month on-left vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Sunday, January 14, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">14</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-15 day-15 day-from-end-17 weekday-2 weekday-position-2 weekday-ordinal-3 weekday-ordinal-from-end-3 week-3 week-from-end-3 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="0" aria-label="Monday, January 15, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">15</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-16 day-16 day-from-end-16 weekday-3 weekday-position-3 weekday-ordinal-3 weekday-ordinal-from-end-3 week-3 week-from-end-3 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Tuesday, January 16, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">16</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-17 day-17 day-from-end-15 weekday-4 weekday-position-4 weekday-ordinal-3 weekday-ordinal-from-end-3 week-3 week-from-end-3 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Wednesday, January 17, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">17</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-18 day-18 day-from-end-14 weekday-5 weekday-position-5 weekday-ordinal-3 weekday-ordinal-from-end-2 week-3 week-from-end-3 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Thursday, January 18, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">18</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-19 day-19 day-from-end-13 weekday-6 weekday-position-6 weekday-ordinal-3 weekday-ordinal-from-end-2 week-3 week-from-end-3 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Friday, January 19, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">19</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-20 day-20 day-from-end-12 weekday-7 weekday-position-7 weekday-ordinal-3 weekday-ordinal-from-end-2 week-3 week-from-end-3 in-month on-right vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Saturday, January 20, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">20</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-21 day-21 day-from-end-11 weekday-1 weekday-position-1 weekday-ordinal-3 weekday-ordinal-from-end-2 week-4 week-from-end-2 in-month on-left vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Sunday, January 21, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">21</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-22 day-22 day-from-end-10 weekday-2 weekday-position-2 weekday-ordinal-4 weekday-ordinal-from-end-2 week-4 week-from-end-2 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Monday, January 22, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">22</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-23 day-23 day-from-end-9 weekday-3 weekday-position-3 weekday-ordinal-4 weekday-ordinal-from-end-2 week-4 week-from-end-2 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Tuesday, January 23, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">23</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-24 day-24 day-from-end-8 weekday-4 weekday-position-4 weekday-ordinal-4 weekday-ordinal-from-end-2 week-4 week-from-end-2 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Wednesday, January 24, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">24</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-25 day-25 day-from-end-7 weekday-5 weekday-position-5 weekday-ordinal-4 weekday-ordinal-from-end-1 week-4 week-from-end-2 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Thursday, January 25, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">25</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-26 day-26 day-from-end-6 weekday-6 weekday-position-6 weekday-ordinal-4 weekday-ordinal-from-end-1 week-4 week-from-end-2 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Friday, January 26, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">26</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-27 day-27 day-from-end-5 weekday-7 weekday-position-7 weekday-ordinal-4 weekday-ordinal-from-end-1 week-4 week-from-end-2 in-month on-right vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Saturday, January 27, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">27</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-28 day-28 day-from-end-4 weekday-1 weekday-position-1 weekday-ordinal-4 weekday-ordinal-from-end-1 week-5 week-from-end-1 in-month on-left vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Sunday, January 28, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">28</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-29 day-29 day-from-end-3 weekday-2 weekday-position-2 weekday-ordinal-5 weekday-ordinal-from-end-1 week-5 week-from-end-1 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Monday, January 29, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">29</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-30 day-30 day-from-end-2 weekday-3 weekday-position-3 weekday-ordinal-5 weekday-ordinal-from-end-1 week-5 week-from-end-1 in-month vc-day-box-center-center">
+                <!---->
+                <span tabindex="-1" aria-label="Tuesday, January 30, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">30</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-01-31 day-31 day-from-end-1 weekday-4 weekday-position-4 weekday-ordinal-5 weekday-ordinal-from-end-1 week-5 week-from-end-1 is-last-day in-month vc-day-box-center-center">
+                <div class="vc-highlights vc-day-layer">
+                  <div class="vc-day-layer vc-day-box-center-center">
+                    <div class="vc-highlight" style="background-color: var(--blue-600); border-radius: var(--rounded-full);"></div>
+                  </div>
+                </div>
+                <span tabindex="-1" aria-label="Wednesday, January 31, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable" style="font-weight: var(--font-bold); color: var(--white);">31</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-01 day-1 day-from-end-29 weekday-5 weekday-position-5 weekday-ordinal-1 weekday-ordinal-from-end-5 week-1 week-from-end-5 in-next-month vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Thursday, February 1, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">1</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-02 day-2 day-from-end-28 weekday-6 weekday-position-6 weekday-ordinal-1 weekday-ordinal-from-end-5 week-1 week-from-end-5 in-next-month vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Friday, February 2, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">2</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-03 day-3 day-from-end-27 weekday-7 weekday-position-7 weekday-ordinal-1 weekday-ordinal-from-end-5 week-1 week-from-end-5 in-next-month on-right vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Saturday, February 3, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">3</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-04 day-4 day-from-end-26 weekday-1 weekday-position-1 weekday-ordinal-1 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom on-left vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Sunday, February 4, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">4</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-05 day-5 day-from-end-25 weekday-2 weekday-position-2 weekday-ordinal-1 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Monday, February 5, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">5</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-06 day-6 day-from-end-24 weekday-3 weekday-position-3 weekday-ordinal-1 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Tuesday, February 6, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">6</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-07 day-7 day-from-end-23 weekday-4 weekday-position-4 weekday-ordinal-1 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Wednesday, February 7, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">7</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-08 day-8 day-from-end-22 weekday-5 weekday-position-5 weekday-ordinal-2 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Thursday, February 8, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">8</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-09 day-9 day-from-end-21 weekday-6 weekday-position-6 weekday-ordinal-2 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Friday, February 9, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">9</span>
+                <!---->
+                <!---->
+              </div>
+              <div class="vc-day id-2024-02-10 day-10 day-from-end-20 weekday-7 weekday-position-7 weekday-ordinal-2 weekday-ordinal-from-end-4 week-2 week-from-end-4 in-next-month on-bottom on-right vc-day-box-center-center is-not-in-month">
+                <!---->
+                <span aria-label="Saturday, February 10, 2024" aria-disabled="false" role="button" class="vc-day-content vc-focusable">10</span>
+                <!---->
+                <!---->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="vc-arrows-container title-center">
+          <div class="vc-arrow is-left is-disabled" role="button">
+            <svg class="vc-svg-icon" width="26px" height="26px" viewBox="0 -1 16 34">
+              <path d="M11.196 10c0 0.143-0.071 0.304-0.179 0.411l-7.018 7.018 7.018 7.018c0.107 0.107 0.179 0.268 0.179 0.411s-0.071 0.304-0.179 0.411l-0.893 0.893c-0.107 0.107-0.268 0.179-0.411 0.179s-0.304-0.071-0.411-0.179l-8.321-8.321c-0.107-0.107-0.179-0.268-0.179-0.411s0.071-0.304 0.179-0.411l8.321-8.321c0.107-0.107 0.268-0.179 0.411-0.179s0.304 0.071 0.411 0.179l0.893 0.893c0.107 0.107 0.179 0.25 0.179 0.411z"></path>
+            </svg>
+          </div>
+          <div class="vc-arrow is-right" role="button">
+            <svg class="vc-svg-icon" width="26px" height="26px" viewBox="-5 -1 16 34">
+              <path d="M10.625 17.429c0 0.143-0.071 0.304-0.179 0.411l-8.321 8.321c-0.107 0.107-0.268 0.179-0.411 0.179s-0.304-0.071-0.411-0.179l-0.893-0.893c-0.107-0.107-0.179-0.25-0.179-0.411 0-0.143 0.071-0.304 0.179-0.411l7.018-7.018-7.018-7.018c-0.107-0.107-0.179-0.268-0.179-0.411s0.071-0.304 0.179-0.411l0.893-0.893c0.107-0.107 0.268-0.179 0.411-0.179s0.304 0.071 0.411 0.179l8.321 8.321c0.107 0.107 0.179 0.268 0.179 0.411z"></path>
+            </svg>
+          </div>
+        </div>
+        <!---->
+      </div>
+      <div class="vc-popover-content-wrapper">
+        <!---->
+      </div>
+    </div>
+    <span class="vc-popover-caret direction-top align-left"></span>
+  </div>
+</div>
