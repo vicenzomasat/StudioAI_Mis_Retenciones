@@ -234,9 +234,9 @@ async def navigate_calendar_to_date_fast(page, target_year: int, target_month: i
         return False
 
 async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_month: int, on_log=print):
-    """Navigate v-calendar to target year/month using arrow buttons.
+    """Navigate v-calendar to target year/month using arrow buttons ONLY.
 
-    Robustly navigates month by month until finding the target date.
+    Does NOT click on title - only uses left/right arrows.
 
     Args:
         page: Playwright page
@@ -263,7 +263,7 @@ async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_m
         attempts += 1
 
         try:
-            # Get current calendar month/year from title
+            # Get current calendar month/year from title (READ ONLY - DO NOT CLICK)
             title_selector = '.vc-title'
             title_element = page.locator(title_selector).first
 
@@ -274,6 +274,7 @@ async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_m
             on_log(f"  [DEBUG] Intento {attempts}: Calendario mostrando '{title_text}'")
 
             # Parse year from title (format: "Month YYYY" or "Month de YYYY")
+            import re
             year_match = re.search(r'\b(20\d{2})\b', title_text)
             if not year_match:
                 on_log(f"  [ERROR] No se pudo extraer año del título: '{title_text}'")
@@ -282,7 +283,6 @@ async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_m
             current_year = int(year_match.group(1))
 
             # Parse month from title
-            # Extract first word (should be month name)
             title_lower = title_text.lower()
             current_month = None
 
@@ -321,7 +321,7 @@ async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_m
                 arrow_selector = '.vc-arrow.is-right'
                 direction = "siguiente"
 
-            on_log(f"  [DEBUG] Navegando a mes {direction}...")
+            on_log(f"  [DEBUG] Navegando a mes {direction} con flecha {arrow_selector}...")
 
             # Click the arrow button
             arrow = page.locator(arrow_selector).first
@@ -329,7 +329,7 @@ async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_m
             await arrow.click()
 
             # Wait for calendar to update
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.6)  # Slightly longer wait for animation
 
         except Exception as e:
             on_log(f"  [ERROR] Error en intento {attempts}: {e}")
@@ -636,14 +636,9 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     target_year = fecha_obj.year
     target_month = fecha_obj.month
 
-    # PRIMERO: Intentar year picker rápido
-    on_log(f"  [DEBUG] Intentando navegación rápida con year picker...")
-    year_picker_worked = await navigate_calendar_to_date_fast(page, target_year, target_month, on_log)
-
-    # FALLBACK: Si no funcionó, usar flechas
-    if not year_picker_worked:
-        on_log(f"  [DEBUG] Year picker no disponible, usando navegación con flechas...")
-        await navigate_calendar_to_date_with_arrows(page, target_year, target_month, on_log)
+    # Navegar con flechas directamente (sin intentar year picker)
+    on_log(f"  [DEBUG] Navegando al mes objetivo: {target_month}/{target_year}")
+    await navigate_calendar_to_date_with_arrows(page, target_year, target_month, on_log)
 
     # Ahora el calendario DEBE estar en el mes correcto
     # Verificar que el día existe antes de hacer click
@@ -655,6 +650,9 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
 
     if await day_element.count() == 0:
         on_log(f"  [ERROR] Día {fecha_hasta_calendar} no encontrado en DOM después de navegación")
+        # Dump HTML for debugging
+        calendar_html = await page.locator('.vc-pane-container').inner_html()
+        on_log(f"  [DEBUG] HTML del calendario:\n{calendar_html[:500]}")
         raise ValueError(f"Día {fecha_hasta_calendar} no existe en el calendario")
 
     on_log(f"  [DEBUG] Haciendo click en día: {day_selector_hasta}")
