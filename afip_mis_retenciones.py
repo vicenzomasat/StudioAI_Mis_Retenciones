@@ -233,6 +233,115 @@ async def navigate_calendar_to_date_fast(page, target_year: int, target_month: i
         on_log(f"  [INFO] Asumiendo que calendario ya está en mes/año correcto")
         return False
 
+async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_month: int, on_log=print):
+    """Navigate v-calendar to target year/month using arrow buttons.
+
+    Robustly navigates month by month until finding the target date.
+
+    Args:
+        page: Playwright page
+        target_year: Target year (e.g., 2024)
+        target_month: Target month (1-12)
+        on_log: Logging function
+    """
+    max_attempts = 36  # Max 36 months (3 years)
+    attempts = 0
+
+    month_names_en = ["January", "February", "March", "April", "May", "June",
+                      "July", "August", "September", "October", "November", "December"]
+    month_names_es = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                      "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
+    # Create mapping for both languages
+    month_map = {}
+    for i, (en, es) in enumerate(zip(month_names_en, month_names_es), 1):
+        month_map[en.lower()] = i
+        month_map[es.lower()] = i
+        month_map[en[:3].lower()] = i  # Short form: Jan, Feb, etc.
+
+    while attempts < max_attempts:
+        attempts += 1
+
+        try:
+            # Get current calendar month/year from title
+            title_selector = '.vc-title'
+            title_element = page.locator(title_selector).first
+
+            # Wait for title to be visible
+            await title_element.wait_for(state="visible", timeout=3000)
+            title_text = await title_element.text_content(timeout=3000)
+
+            on_log(f"  [DEBUG] Intento {attempts}: Calendario mostrando '{title_text}'")
+
+            # Parse year from title (format: "Month YYYY" or "Month de YYYY")
+            year_match = re.search(r'\b(20\d{2})\b', title_text)
+            if not year_match:
+                on_log(f"  [ERROR] No se pudo extraer año del título: '{title_text}'")
+                raise ValueError(f"Cannot parse year from title: {title_text}")
+
+            current_year = int(year_match.group(1))
+
+            # Parse month from title
+            # Extract first word (should be month name)
+            title_lower = title_text.lower()
+            current_month = None
+
+            for month_name, month_num in month_map.items():
+                if month_name in title_lower:
+                    current_month = month_num
+                    break
+
+            if current_month is None:
+                on_log(f"  [ERROR] No se pudo extraer mes del título: '{title_text}'")
+                # Intentar con regex para número de mes (si está en formato MM/YYYY)
+                month_match = re.search(r'\b(0?[1-9]|1[0-2])\b', title_text)
+                if month_match:
+                    current_month = int(month_match.group(1))
+                else:
+                    raise ValueError(f"Cannot parse month from title: {title_text}")
+
+            on_log(f"  [DEBUG] Fecha actual del calendario: {current_month}/{current_year}")
+            on_log(f"  [DEBUG] Fecha objetivo: {target_month}/{target_year}")
+
+            # Check if we're at the target month/year
+            if current_year == target_year and current_month == target_month:
+                on_log(f"  ✓ Calendario navegado correctamente a {target_month}/{target_year}")
+                return True
+
+            # Determine direction to navigate
+            current_date = current_year * 12 + current_month
+            target_date = target_year * 12 + target_month
+
+            if current_date > target_date:
+                # Need to go backwards (previous month)
+                arrow_selector = '.vc-arrow.is-left'
+                direction = "anterior"
+            else:
+                # Need to go forwards (next month)
+                arrow_selector = '.vc-arrow.is-right'
+                direction = "siguiente"
+
+            on_log(f"  [DEBUG] Navegando a mes {direction}...")
+
+            # Click the arrow button
+            arrow = page.locator(arrow_selector).first
+            await arrow.wait_for(state="visible", timeout=3000)
+            await arrow.click()
+
+            # Wait for calendar to update
+            await asyncio.sleep(0.5)
+
+        except Exception as e:
+            on_log(f"  [ERROR] Error en intento {attempts}: {e}")
+
+            if attempts >= max_attempts:
+                raise TimeoutError(f"No se pudo navegar al mes objetivo después de {max_attempts} intentos")
+
+            # Try to continue
+            await asyncio.sleep(0.5)
+
+    raise TimeoutError(f"No se pudo navegar al mes objetivo después de {max_attempts} intentos")
+
 # ---------------- Checkpoint System ---------------- #
 
 @dataclass
@@ -513,10 +622,12 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     await fecha_hasta_input.wait_for(state="visible", timeout=10000)
 
     # Abrir calendario
+    on_log(f"  [DEBUG] Abriendo calendario 'Fecha hasta'...")
     await fecha_hasta_input.click()
     await asyncio.sleep(0.5)
 
     # Esperar que se renderice
+    on_log(f"  [DEBUG] Esperando que se renderice el calendario...")
     await page.wait_for_selector('.vc-pane-container', state='visible', timeout=10000)
     await asyncio.sleep(0.5)
 
@@ -525,14 +636,29 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     target_year = fecha_obj.year
     target_month = fecha_obj.month
 
-    # Navegar al mes/año correcto
-    await navigate_calendar_to_date_fast(page, target_year, target_month, on_log)
+    # PRIMERO: Intentar year picker rápido
+    on_log(f"  [DEBUG] Intentando navegación rápida con year picker...")
+    year_picker_worked = await navigate_calendar_to_date_fast(page, target_year, target_month, on_log)
 
-    # Ahora sí, click en el día
+    # FALLBACK: Si no funcionó, usar flechas
+    if not year_picker_worked:
+        on_log(f"  [DEBUG] Year picker no disponible, usando navegación con flechas...")
+        await navigate_calendar_to_date_with_arrows(page, target_year, target_month, on_log)
+
+    # Ahora el calendario DEBE estar en el mes correcto
+    # Verificar que el día existe antes de hacer click
     fecha_hasta_calendar = convert_date_format_for_calendar(fecha_hasta)
     day_selector_hasta = f'.vc-day.id-{fecha_hasta_calendar}'
-    on_log(f"  [DEBUG] Click en día: {day_selector_hasta}")
-    await page.click(day_selector_hasta, timeout=5000)
+
+    on_log(f"  [DEBUG] Verificando si día {fecha_hasta_calendar} está visible...")
+    day_element = page.locator(day_selector_hasta)
+
+    if await day_element.count() == 0:
+        on_log(f"  [ERROR] Día {fecha_hasta_calendar} no encontrado en DOM después de navegación")
+        raise ValueError(f"Día {fecha_hasta_calendar} no existe en el calendario")
+
+    on_log(f"  [DEBUG] Haciendo click en día: {day_selector_hasta}")
+    await day_element.click(timeout=5000)
     await asyncio.sleep(0.5)
     on_log(f"  ✓ Fecha hasta seleccionada: {fecha_hasta}")
 
