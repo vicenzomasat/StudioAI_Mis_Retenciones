@@ -169,6 +169,70 @@ def convert_date_format_for_calendar(date_str: str) -> str:
         logger.warning(f"Error converting date format '{date_str}': {e}. Returning original.")
         return date_str
 
+async def navigate_calendar_to_date_fast(page, target_year: int, target_month: int, on_log=print):
+    """Navigate v-calendar using year/month picker (faster).
+
+    Many v-calendar implementations allow clicking the title to open a year/month picker.
+
+    Args:
+        page: Playwright page
+        target_year: Target year (e.g., 2024)
+        target_month: Target month (1-12)
+        on_log: Logging function
+
+    Returns:
+        True if navigation successful, False if need to use fallback
+    """
+    try:
+        # Click en el título para abrir year/month picker
+        title_selector = '.vc-title, button.vc-title'
+        title = page.locator(title_selector).first
+        await title.wait_for(state="visible", timeout=3000)
+        on_log(f"  [DEBUG] Clickeando título del calendario para abrir picker")
+        await title.click()
+        await asyncio.sleep(0.5)
+
+        # Ahora debería aparecer un selector de año/mes
+        # Buscar el año objetivo
+        year_selector = f'button:has-text("{target_year}"), .vc-nav-item:has-text("{target_year}")'
+        year_btn = page.locator(year_selector).first
+
+        if await year_btn.count() > 0:
+            on_log(f"  [DEBUG] Seleccionando año {target_year} del picker")
+            await year_btn.click()
+            await asyncio.sleep(0.5)
+
+            # Seleccionar mes si es necesario
+            # v-calendar podría mostrar grid de meses después de seleccionar año
+            # Intentar clickear en el mes objetivo
+            month_names = ["January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"]
+            month_names_es = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+
+            target_month_name_en = month_names[target_month - 1]
+            target_month_name_es = month_names_es[target_month - 1]
+
+            # Intentar ambos idiomas
+            month_selector = f'button:has-text("{target_month_name_en}"), button:has-text("{target_month_name_es}"), .vc-nav-item:has-text("{target_month_name_en}"), .vc-nav-item:has-text("{target_month_name_es}")'
+            month_btn = page.locator(month_selector).first
+
+            if await month_btn.count() > 0:
+                on_log(f"  [DEBUG] Seleccionando mes {target_month_name_en}/{target_month_name_es}")
+                await month_btn.click()
+                await asyncio.sleep(0.5)
+
+            on_log(f"  ✓ Navegado a {target_month}/{target_year}")
+            return True
+        else:
+            on_log(f"  [WARNING] Year picker no disponible, calendario ya debe estar en fecha correcta")
+            return False
+
+    except Exception as e:
+        on_log(f"  [WARNING] No se pudo usar year picker: {e}")
+        on_log(f"  [INFO] Asumiendo que calendario ya está en mes/año correcto")
+        return False
+
 # ---------------- Checkpoint System ---------------- #
 
 @dataclass
@@ -419,55 +483,56 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
         except TimeoutError:
             on_log(f"⚠ Campo 'Tipo de operación' no encontrado (puede ser esperado para algunos impuestos)")
 
-    # 3. Fill dates using calendar picker
+    # 3. Fill dates
     on_log(f"Completando fechas: {fecha_desde} - {fecha_hasta}...")
 
-    # Convert dates from dd/mm/yyyy (UI format) to yyyy-mm-dd (Calendar ID format)
-    fecha_desde_calendar = convert_date_format_for_calendar(fecha_desde)
-    fecha_hasta_calendar = convert_date_format_for_calendar(fecha_hasta)
-    on_log(f"  [DEBUG] Fechas convertidas para calendario: {fecha_desde_calendar} - {fecha_hasta_calendar}")
-
-    # Fecha desde
-    on_log(f"  [DEBUG] Seleccionando fecha desde en calendario...")
+    # Fecha desde - TIPEO MANUAL
+    on_log(f"  [DEBUG] Ingresando fecha desde manualmente: {fecha_desde}")
     fecha_desde_input = page.locator("#datePickerFechasRetencionesDesde__input")
     await fecha_desde_input.wait_for(state="visible", timeout=10000)
 
-    # Click to open calendar
-    on_log(f"  [DEBUG] Abriendo calendario 'Fecha desde'...")
+    # Click para hacer focus
     await fecha_desde_input.click()
+    await asyncio.sleep(0.3)
+
+    # CRITICAL: Clear primero, luego fill
+    await fecha_desde_input.fill("")  # Clear
+    await asyncio.sleep(0.2)
+    await fecha_desde_input.fill(fecha_desde)  # dd/mm/yyyy
     await asyncio.sleep(0.5)
 
-    # Wait for calendar to render
-    on_log(f"  [DEBUG] Esperando que se renderice el calendario...")
-    await page.wait_for_selector('.vc-pane-container', state='visible', timeout=10000)
-    await asyncio.sleep(0.5)
+    # NO usar Tab - simplemente hacer click afuera para confirmar
+    await page.locator("body").click(position={"x": 0, "y": 0})  # Click en esquina superior
+    await asyncio.sleep(0.3)
 
-    # Click on the specific day using the ID from HTML
-    day_selector_desde = f'.vc-day.id-{fecha_desde_calendar}'
-    on_log(f"  [DEBUG] Haciendo click en día: {day_selector_desde}")
-    await page.click(day_selector_desde)
-    await asyncio.sleep(0.5)
-    on_log(f"  ✓ Fecha desde seleccionada: {fecha_desde}")
+    on_log(f"  ✓ Fecha desde ingresada: {fecha_desde}")
 
-    # Fecha hasta
-    on_log(f"  [DEBUG] Seleccionando fecha hasta en calendario...")
+    # Fecha hasta - CON NAVEGACIÓN EN CALENDARIO
+    on_log(f"  [DEBUG] Seleccionando fecha hasta con calendario: {fecha_hasta}")
     fecha_hasta_input = page.locator("#datePickerFechasRetencionesHasta__input")
     await fecha_hasta_input.wait_for(state="visible", timeout=10000)
 
-    # Click to open calendar
-    on_log(f"  [DEBUG] Abriendo calendario 'Fecha hasta'...")
+    # Abrir calendario
     await fecha_hasta_input.click()
     await asyncio.sleep(0.5)
 
-    # Wait for calendar to render
-    on_log(f"  [DEBUG] Esperando que se renderice el calendario...")
+    # Esperar que se renderice
     await page.wait_for_selector('.vc-pane-container', state='visible', timeout=10000)
     await asyncio.sleep(0.5)
 
-    # Click on the specific day using the ID from HTML
+    # Parsear fecha objetivo
+    fecha_obj = datetime.strptime(fecha_hasta, "%d/%m/%Y")
+    target_year = fecha_obj.year
+    target_month = fecha_obj.month
+
+    # Navegar al mes/año correcto
+    await navigate_calendar_to_date_fast(page, target_year, target_month, on_log)
+
+    # Ahora sí, click en el día
+    fecha_hasta_calendar = convert_date_format_for_calendar(fecha_hasta)
     day_selector_hasta = f'.vc-day.id-{fecha_hasta_calendar}'
-    on_log(f"  [DEBUG] Haciendo click en día: {day_selector_hasta}")
-    await page.click(day_selector_hasta)
+    on_log(f"  [DEBUG] Click en día: {day_selector_hasta}")
+    await page.click(day_selector_hasta, timeout=5000)
     await asyncio.sleep(0.5)
     on_log(f"  ✓ Fecha hasta seleccionada: {fecha_hasta}")
 
