@@ -829,18 +829,10 @@ async def _handle_export_popup(page, on_log=print):
     await asyncio.sleep(2)
 
 async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=10):
-    """Wait for file using timing-based matching.
-
-    Strategy:
-    1. Wait 5 seconds after export for file to appear
-    2. Get the FIRST row (row-index="0" = most recent)
-    3. Verify timestamp is within last 2 minutes
-    4. Verify tax number matches
-    5. Download
-    """
+    """Wait for file and download - simplified approach using row position only."""
     on_log("Esperando a que el archivo esté listo...")
 
-    # Click on "Consultas exportadas" tab if not already there
+    # Navigate to Consultas exportadas tab
     try:
         tab_btn = page.locator("button#tabConsultasExportdas-tab, button[aria-controls='tabConsultasExportdas']").first
         if await tab_btn.count():
@@ -849,17 +841,12 @@ async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_d
     except Exception:
         pass
 
-    tax_number = tax_code.split("_")[1] if "_" in tax_code else tax_code
-
-    max_attempts = max_wait_minutes * 6  # 6 attempts per minute
+    max_attempts = max_wait_minutes * 6
     attempt = 0
 
-    # Wait before first check
-    on_log("  [DEBUG] Esperando 5 segundos iniciales para que el archivo se registre...")
+    # Initial wait
+    on_log("  [DEBUG] Esperando 5 segundos para que el archivo se registre...")
     await asyncio.sleep(5)
-
-    # Get current time for timestamp validation
-    export_time = datetime.now()
 
     while attempt < max_attempts:
         attempt += 1
@@ -875,122 +862,115 @@ async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_d
             on_log(f"⚠ Botón refresh no encontrado: {e}")
 
         try:
-            # Get ONLY the first row (most recent by definition)
-            first_row_selector = ".ag-row[row-index='0']"
-            first_row = page.locator(first_row_selector).first
+            # Strategy: Find the FIRST row with "Finalizado" badge
+            # This should be our most recent export
 
-            if await first_row.count() == 0:
+            on_log("  [DEBUG] Buscando primera fila con estado 'Finalizado'...")
+
+            # Look for rows
+            all_rows = page.locator(".ag-row")
+            row_count = await all_rows.count()
+
+            on_log(f"  [DEBUG] Total de filas en tabla: {row_count}")
+
+            if row_count == 0:
                 on_log("⚠ No hay filas en la tabla")
                 await asyncio.sleep(10)
                 continue
 
-            on_log("  [DEBUG] Analizando primera fila (más reciente)...")
+            # Check rows from top to bottom (most recent first)
+            found_file = False
 
-            # Get cells
-            filtros_text = ""
-            estado_text = ""
-            timestamp_text = ""
+            for row_idx in range(min(row_count, 3)):  # Check first 3 rows only
+                row = all_rows.nth(row_idx)
 
-            try:
-                filtros_cell = first_row.locator("[col-id='filtros']")
-                filtros_text = await filtros_cell.text_content(timeout=3000)
-                on_log(f"  [DEBUG] Filtros: '{filtros_text}'")
-            except Exception as e:
-                on_log(f"  [DEBUG] Error leyendo filtros: {e}")
+                on_log(f"  [DEBUG] Analizando fila {row_idx}...")
 
-            try:
-                estado_cell = first_row.locator("[col-id='estado']")
-                estado_text = await estado_cell.text_content(timeout=3000)
-                on_log(f"  [DEBUG] Estado: '{estado_text}'")
-            except Exception as e:
-                on_log(f"  [DEBUG] Error leyendo estado: {e}")
+                # Check if this row has "Finalizado" badge
+                # Look for the badge with text "Finalizado"
+                finalizado_badge = row.locator(".badge:has-text('Finalizado'), span:has-text('Finalizado')")
 
-            try:
-                timestamp_cell = first_row.locator("[col-id='fechaTimestamp']")
-                timestamp_text = await timestamp_cell.text_content(timeout=3000)
-                on_log(f"  [DEBUG] Timestamp: '{timestamp_text}'")
-            except Exception as e:
-                on_log(f"  [DEBUG] Error leyendo timestamp: {e}")
+                if await finalizado_badge.count() > 0:
+                    on_log(f"  [DEBUG] Fila {row_idx} tiene estado 'Finalizado'")
 
-            # Matching criteria:
-            # 1. Tax number in filtros
-            # 2. Estado = "Finalizado"
-            # 3. Timestamp is within last 5 minutes (to be safe)
+                    # This is a finished file - try to download it
+                    # Look for download button/link in this row
 
-            has_tax = tax_number in filtros_text if filtros_text else False
-            is_finalizado = "Finalizado" in estado_text if estado_text else False
+                    # Try multiple selectors for download button
+                    download_selectors = [
+                        "a[download]",  # Link with download attribute
+                        "button[title*='Descargar']",  # Button with "Descargar" in title
+                        "a[href*='descarga']",  # Link with 'descarga' in URL
+                        ".e-icon:has-text('file_download')",  # Material icon
+                    ]
 
-            # Parse timestamp to verify it's recent
-            is_recent = False
-            if timestamp_text:
-                try:
-                    # Format: "15/11/2025 19:51"
-                    file_timestamp = datetime.strptime(timestamp_text.strip(), "%d/%m/%Y %H:%M")
-                    time_diff = (export_time - file_timestamp).total_seconds() / 60  # minutes
+                    download_element = None
 
-                    # File should be created AFTER we started (negative diff) or within last 5 minutes
-                    is_recent = abs(time_diff) <= 5
+                    for selector in download_selectors:
+                        candidate = row.locator(selector).first
+                        if await candidate.count() > 0:
+                            download_element = candidate
+                            on_log(f"  [DEBUG] Encontrado elemento de descarga con selector: {selector}")
+                            break
 
-                    on_log(f"  [DEBUG] Tiempo desde export: {time_diff:.1f} minutos")
-                    on_log(f"  [DEBUG] ¿Es reciente? {is_recent}")
-                except Exception as e:
-                    on_log(f"  [DEBUG] Error parseando timestamp: {e}")
-                    # If can't parse, assume it's the right one (first row should be ours)
-                    is_recent = True
+                    if download_element is None:
+                        on_log(f"  [WARNING] Fila {row_idx} finalizada pero sin botón de descarga")
+                        continue
 
-            on_log(f"  [DEBUG] Matching: tax={has_tax}, finalizado={is_finalizado}, recent={is_recent}")
+                    # Get row text to verify it's our file (optional validation)
+                    try:
+                        row_text = await row.inner_text(timeout=2000)
+                        tax_number = tax_code.split("_")[1] if "_" in tax_code else tax_code
 
-            # Match: first row + tax number + finalizado + recent timestamp
-            if has_tax and is_finalizado and is_recent:
-                on_log(f"✓ Archivo encontrado y listo!")
+                        if tax_number in row_text:
+                            on_log(f"  [DEBUG] Fila {row_idx} contiene el impuesto {tax_number}")
+                        else:
+                            on_log(f"  [WARNING] Fila {row_idx} no contiene el impuesto esperado")
+                            # Continue anyway - first finished row is likely ours
+                    except Exception as e:
+                        on_log(f"  [DEBUG] No se pudo validar texto de fila: {e}")
 
-                # Find download button/link
-                # The <a> tag has the download attribute
-                download_link = first_row.locator("a[download]").first
+                    # Download the file
+                    on_log(f"✓ Archivo encontrado en fila {row_idx}. Descargando...")
 
-                if await download_link.count() == 0:
-                    on_log("  [ERROR] No se encontró link de descarga")
-                    await asyncio.sleep(10)
-                    continue
+                    try:
+                        # If it's an <a> tag, we might need to click the button inside it
+                        if "a[" in str(download_selectors):
+                            # Try to find button inside the link
+                            download_btn = download_element.locator("button").first
+                            if await download_btn.count() > 0:
+                                download_element = download_btn
 
-                # Get the download filename from the <a> tag
-                download_filename = await download_link.get_attribute("download")
-                on_log(f"  [DEBUG] Archivo a descargar: {download_filename}")
+                        async with page.expect_download(timeout=30000) as download_info:
+                            await download_element.click()
+                            download = await download_info.value
 
-                # Click the button inside the <a> tag
-                download_btn = download_link.locator("button").first
+                        # Generate filename
+                        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                        desde_fmt = fecha_desde.replace("/", "")
+                        hasta_fmt = fecha_hasta.replace("/", "")
+                        filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
+                        save_path = OUTPUT_DIR / filename
 
-                on_log("  [DEBUG] Iniciando descarga...")
-                try:
-                    async with page.expect_download(timeout=30000) as download_info:
-                        await download_btn.click()
-                        download = await download_info.value
+                        # Save
+                        on_log(f"  [DEBUG] Guardando como: {save_path}")
+                        await download.save_as(save_path)
+                        on_log(f"✓ Archivo descargado: {save_path}")
 
-                    # Generate our own filename with dates
-                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    desde_fmt = fecha_desde.replace("/", "")
-                    hasta_fmt = fecha_hasta.replace("/", "")
-                    filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
-                    save_path = OUTPUT_DIR / filename
+                        return str(save_path)
 
-                    # Save
-                    on_log(f"  [DEBUG] Guardando archivo como: {save_path}")
-                    await download.save_as(save_path)
-                    on_log(f"✓ Archivo descargado: {save_path}")
+                    except TimeoutError:
+                        on_log("  [ERROR] Timeout esperando descarga")
+                        continue
+                    except Exception as e:
+                        on_log(f"  [ERROR] Error descargando: {e}")
+                        continue
 
-                    return str(save_path)
+                else:
+                    on_log(f"  [DEBUG] Fila {row_idx} no tiene estado 'Finalizado'")
 
-                except TimeoutError:
-                    on_log("  [ERROR] Timeout esperando descarga")
-                    await asyncio.sleep(10)
-                    continue
-
-            elif not is_finalizado and has_tax:
-                on_log(f"⚠ Nuestro archivo encontrado pero estado: '{estado_text}'")
-            elif not is_recent:
-                on_log(f"⚠ Archivo encontrado pero no es reciente (timestamp: {timestamp_text})")
-            else:
-                on_log(f"⚠ Primera fila no coincide con nuestra consulta")
+            if not found_file:
+                on_log("⚠ No se encontró ninguna fila con estado 'Finalizado'")
 
         except Exception as e:
             import traceback
