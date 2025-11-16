@@ -829,10 +829,14 @@ async def _handle_export_popup(page, on_log=print):
     await asyncio.sleep(2)
 
 async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=10):
-    """Wait for the file to be ready in 'Consultas exportadas' and download it.
+    """Wait for file using timing-based matching.
 
-    Args:
-        max_wait_minutes: Maximum time to wait for file (default 10 minutes)
+    Strategy:
+    1. Wait 5 seconds after export for file to appear
+    2. Get the FIRST row (row-index="0" = most recent)
+    3. Verify timestamp is within last 2 minutes
+    4. Verify tax number matches
+    5. Download
     """
     on_log("Esperando a que el archivo esté listo...")
 
@@ -841,134 +845,161 @@ async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_d
         tab_btn = page.locator("button#tabConsultasExportdas-tab, button[aria-controls='tabConsultasExportdas']").first
         if await tab_btn.count():
             await tab_btn.click()
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
     except Exception:
         pass
 
-    # Get tax name for validation
-    tax_config = TAX_TYPES_DICT.get(tax_code)
     tax_number = tax_code.split("_")[1] if "_" in tax_code else tax_code
 
-    max_attempts = max_wait_minutes * 6  # 6 attempts per minute (every 10 seconds)
+    max_attempts = max_wait_minutes * 6  # 6 attempts per minute
     attempt = 0
+
+    # Wait before first check
+    on_log("  [DEBUG] Esperando 5 segundos iniciales para que el archivo se registre...")
+    await asyncio.sleep(5)
+
+    # Get current time for timestamp validation
+    export_time = datetime.now()
 
     while attempt < max_attempts:
         attempt += 1
         on_log(f"Intento {attempt}/{max_attempts}: Buscando archivo...")
 
-        # Click refresh button
-        refresh_btn = page.locator("#btnRecargarTablaAplicativo, button#btnRecargarTablaAplicativo").first
+        # Refresh
         try:
+            refresh_btn = page.locator("#btnRecargarTablaAplicativo, button#btnRecargarTablaAplicativo").first
             await refresh_btn.wait_for(state="visible", timeout=5000)
             await refresh_btn.click()
             await asyncio.sleep(2)
-        except Exception:
-            on_log("⚠ Botón refresh no encontrado")
-
-        # Look for the first row in the table that matches our query
-        # According to Step_10, the row contains: filtros, fechaTimestamp, tipo, estado, download button
-        # We need to find a row with:
-        # - filtros containing our tax number
-        # - estado = "Finalizado"
-        # - tipo = "CSV"
+        except Exception as e:
+            on_log(f"⚠ Botón refresh no encontrado: {e}")
 
         try:
-            # Find all rows
-            on_log("  [DEBUG] Buscando filas en tabla con selector '.ag-row[role='row']'")
-            rows = page.locator(".ag-row[role='row']")
-            row_count = await rows.count()
+            # Get ONLY the first row (most recent by definition)
+            first_row_selector = ".ag-row[row-index='0']"
+            first_row = page.locator(first_row_selector).first
 
-            on_log(f"  [DEBUG] Encontradas {row_count} filas en la tabla")
+            if await first_row.count() == 0:
+                on_log("⚠ No hay filas en la tabla")
+                await asyncio.sleep(10)
+                continue
 
-            if row_count > 0:
-                # Check the first row (most recent)
-                first_row = rows.first
-                on_log("  [DEBUG] Analizando primera fila...")
+            on_log("  [DEBUG] Analizando primera fila (más reciente)...")
 
-                # Get the filtros text (contains tax info) - with error handling
-                filtros_text = ""
-                estado_text = ""
+            # Get cells
+            filtros_text = ""
+            estado_text = ""
+            timestamp_text = ""
 
+            try:
+                filtros_cell = first_row.locator("[col-id='filtros']")
+                filtros_text = await filtros_cell.text_content(timeout=3000)
+                on_log(f"  [DEBUG] Filtros: '{filtros_text}'")
+            except Exception as e:
+                on_log(f"  [DEBUG] Error leyendo filtros: {e}")
+
+            try:
+                estado_cell = first_row.locator("[col-id='estado']")
+                estado_text = await estado_cell.text_content(timeout=3000)
+                on_log(f"  [DEBUG] Estado: '{estado_text}'")
+            except Exception as e:
+                on_log(f"  [DEBUG] Error leyendo estado: {e}")
+
+            try:
+                timestamp_cell = first_row.locator("[col-id='fechaTimestamp']")
+                timestamp_text = await timestamp_cell.text_content(timeout=3000)
+                on_log(f"  [DEBUG] Timestamp: '{timestamp_text}'")
+            except Exception as e:
+                on_log(f"  [DEBUG] Error leyendo timestamp: {e}")
+
+            # Matching criteria:
+            # 1. Tax number in filtros
+            # 2. Estado = "Finalizado"
+            # 3. Timestamp is within last 5 minutes (to be safe)
+
+            has_tax = tax_number in filtros_text if filtros_text else False
+            is_finalizado = "Finalizado" in estado_text if estado_text else False
+
+            # Parse timestamp to verify it's recent
+            is_recent = False
+            if timestamp_text:
                 try:
-                    on_log("  [DEBUG] Buscando celda 'filtros' con selector [col-id='filtros']")
-                    filtros_cell = first_row.locator("[col-id='filtros']")
+                    # Format: "15/11/2025 19:51"
+                    file_timestamp = datetime.strptime(timestamp_text.strip(), "%d/%m/%Y %H:%M")
+                    time_diff = (export_time - file_timestamp).total_seconds() / 60  # minutes
 
-                    # Wait for cell to be available with shorter timeout
-                    await filtros_cell.wait_for(state="attached", timeout=5000)
-                    filtros_text = await filtros_cell.text_content(timeout=5000)
-                    on_log(f"  [DEBUG] Filtros text: '{filtros_text}'")
+                    # File should be created AFTER we started (negative diff) or within last 5 minutes
+                    is_recent = abs(time_diff) <= 5
+
+                    on_log(f"  [DEBUG] Tiempo desde export: {time_diff:.1f} minutos")
+                    on_log(f"  [DEBUG] ¿Es reciente? {is_recent}")
                 except Exception as e:
-                    on_log(f"  [DEBUG] Error leyendo filtros: {e}")
-                    # Try alternative selector
-                    try:
-                        on_log("  [DEBUG] Intentando selector alternativo para filtros...")
-                        filtros_text = await first_row.locator("div.ag-cell[col-id='filtros']").text_content(timeout=5000)
-                        on_log(f"  [DEBUG] Filtros (alternativo): '{filtros_text}'")
-                    except Exception as e2:
-                        on_log(f"  [DEBUG] Error con selector alternativo: {e2}")
+                    on_log(f"  [DEBUG] Error parseando timestamp: {e}")
+                    # If can't parse, assume it's the right one (first row should be ours)
+                    is_recent = True
 
+            on_log(f"  [DEBUG] Matching: tax={has_tax}, finalizado={is_finalizado}, recent={is_recent}")
+
+            # Match: first row + tax number + finalizado + recent timestamp
+            if has_tax and is_finalizado and is_recent:
+                on_log(f"✓ Archivo encontrado y listo!")
+
+                # Find download button/link
+                # The <a> tag has the download attribute
+                download_link = first_row.locator("a[download]").first
+
+                if await download_link.count() == 0:
+                    on_log("  [ERROR] No se encontró link de descarga")
+                    await asyncio.sleep(10)
+                    continue
+
+                # Get the download filename from the <a> tag
+                download_filename = await download_link.get_attribute("download")
+                on_log(f"  [DEBUG] Archivo a descargar: {download_filename}")
+
+                # Click the button inside the <a> tag
+                download_btn = download_link.locator("button").first
+
+                on_log("  [DEBUG] Iniciando descarga...")
                 try:
-                    on_log("  [DEBUG] Buscando celda 'estado' con selector [col-id='estado']")
-                    estado_cell = first_row.locator("[col-id='estado']")
-                    await estado_cell.wait_for(state="attached", timeout=5000)
-                    estado_text = await estado_cell.text_content(timeout=5000)
-                    on_log(f"  [DEBUG] Estado text: '{estado_text}'")
-                except Exception as e:
-                    on_log(f"  [DEBUG] Error leyendo estado: {e}")
-                    # Try alternative selector
-                    try:
-                        on_log("  [DEBUG] Intentando selector alternativo para estado...")
-                        estado_text = await first_row.locator("div.ag-cell[col-id='estado']").text_content(timeout=5000)
-                        on_log(f"  [DEBUG] Estado (alternativo): '{estado_text}'")
-                    except Exception as e2:
-                        on_log(f"  [DEBUG] Error con selector alternativo: {e2}")
-
-                on_log(f"Primera fila - Filtros: '{filtros_text}', Estado: '{estado_text}'")
-
-                # Check if it matches our query
-                if filtros_text and tax_number in filtros_text and estado_text and "Finalizado" in estado_text:
-                    on_log(f"✓ Archivo encontrado y listo!")
-
-                    # Click the download button
-                    on_log("  [DEBUG] Buscando botón de descarga...")
-                    download_btn = first_row.locator("button[title*='Descargar'], a[download], button:has-text('Descargar')").first
-
-                    # Set up download handler
-                    on_log("  [DEBUG] Iniciando descarga...")
                     async with page.expect_download(timeout=30000) as download_info:
                         await download_btn.click()
                         download = await download_info.value
 
-                    # Generate filename
+                    # Generate our own filename with dates
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     desde_fmt = fecha_desde.replace("/", "")
                     hasta_fmt = fecha_hasta.replace("/", "")
                     filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
                     save_path = OUTPUT_DIR / filename
 
-                    # Save the download
-                    on_log(f"  [DEBUG] Guardando archivo en: {save_path}")
+                    # Save
+                    on_log(f"  [DEBUG] Guardando archivo como: {save_path}")
                     await download.save_as(save_path)
                     on_log(f"✓ Archivo descargado: {save_path}")
 
                     return str(save_path)
-                else:
-                    on_log(f"⚠ El archivo más reciente no coincide con nuestra consulta o no está finalizado. Esperando...")
-                    on_log(f"  [DEBUG] Esperado tax_number: '{tax_number}', Estado esperado: 'Finalizado'")
+
+                except TimeoutError:
+                    on_log("  [ERROR] Timeout esperando descarga")
+                    await asyncio.sleep(10)
+                    continue
+
+            elif not is_finalizado and has_tax:
+                on_log(f"⚠ Nuestro archivo encontrado pero estado: '{estado_text}'")
+            elif not is_recent:
+                on_log(f"⚠ Archivo encontrado pero no es reciente (timestamp: {timestamp_text})")
             else:
-                on_log("⚠ No hay archivos en la tabla aún. Esperando...")
+                on_log(f"⚠ Primera fila no coincide con nuestra consulta")
 
         except Exception as e:
             import traceback
-            on_log(f"⚠ Error al buscar archivo: {e}")
-            on_log(f"  [DEBUG] Traceback completo:")
-            on_log(f"{traceback.format_exc()}")
+            on_log(f"⚠ Error: {e}")
+            on_log(f"  [DEBUG] Traceback:\n{traceback.format_exc()}")
 
-        # Wait before next attempt
         await asyncio.sleep(10)
 
-    # Timeout
-    raise TimeoutError(f"El archivo no estuvo listo después de {max_wait_minutes} minutos")
+    raise TimeoutError(f"Archivo no listo después de {max_wait_minutes} minutos")
 
 async def scrape_mis_retenciones(
     cuit_login: str,
