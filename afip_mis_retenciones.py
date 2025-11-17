@@ -1002,6 +1002,12 @@ async def scrape_mis_retenciones(
                 headless=False,
                 accept_downloads=True
             )
+
+            # Start tracing
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            await context.tracing.start(screenshots=True, snapshots=True)
+            on_log("Tracing iniciado")
+
             for p in context.pages:
                 await _apply_viewport(p)
 
@@ -1069,6 +1075,12 @@ async def scrape_mis_retenciones(
             on_log("=" * 60)
             for idx, file in enumerate(downloaded_files, 1):
                 on_log(f"Archivo {idx}: {file}")
+
+            # Stop tracing
+            trace_filename = f"trace_{timestamp}.zip"
+            trace_path = OUTPUT_DIR / trace_filename
+            await context.tracing.stop(path=str(trace_path))
+            on_log(f"Tracing guardado en: {trace_path}")
 
             return {
                 "files": downloaded_files,
@@ -1166,6 +1178,12 @@ async def scrape_mis_retenciones_batch(
                 headless=False,
                 accept_downloads=True
             )
+
+            # Start tracing
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            await context.tracing.start(screenshots=True, snapshots=True)
+            on_log("Tracing iniciado")
+
             for p in context.pages:
                 await _apply_viewport(p)
 
@@ -1273,6 +1291,12 @@ async def scrape_mis_retenciones_batch(
             on_log("Archivos:")
             for idx, file_path in enumerate(progress.all_downloaded_files, 1):
                 on_log(f"  {idx}. {file_path}")
+
+            # Stop tracing
+            trace_filename = f"trace_batch_{timestamp}.zip"
+            trace_path = OUTPUT_DIR / trace_filename
+            await context.tracing.stop(path=str(trace_path))
+            on_log(f"Tracing guardado en: {trace_path}")
 
             return {
                 "session_id": progress.session_id,
