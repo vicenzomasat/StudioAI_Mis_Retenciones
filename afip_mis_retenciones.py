@@ -829,7 +829,7 @@ async def _handle_export_popup(page, on_log=print):
     await asyncio.sleep(2)
 
 async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=10):
-    """Wait for file and download using ag-grid col-id structure."""
+    """Download file using simplest possible approach - just click the download icon in first row."""
     on_log("Esperando a que el archivo esté listo...")
 
     # Navigate to tab
@@ -862,100 +862,88 @@ async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_d
             on_log(f"⚠ Botón refresh no encontrado: {e}")
 
         try:
-            # Get all rows
-            all_rows = page.locator(".ag-row")
-            row_count = await all_rows.count()
+            # Strategy: Find first row + file_download icon
+            on_log("  [DEBUG] Buscando primera fila y botón de descarga...")
 
-            on_log(f"  [DEBUG] Total de filas: {row_count}")
+            # Get first row specifically
+            first_row = page.locator(".ag-row[row-index='0']").first
 
-            if row_count == 0:
-                on_log("⚠ No hay filas en la tabla")
+            if await first_row.count() == 0:
+                on_log("⚠ No se encontró fila con row-index='0'")
                 await asyncio.sleep(10)
                 continue
 
-            # Check first 3 rows
-            for row_idx in range(min(row_count, 3)):
-                row = all_rows.nth(row_idx)
+            on_log("  [DEBUG] Primera fila encontrada")
 
-                on_log(f"  [DEBUG] Analizando fila {row_idx}...")
+            # Find the file_download icon inside this row
+            # Use the text content of the span to find it
+            download_icon = first_row.locator("span.e-icon:has-text('file_download')").first
 
-                # Find the estado cell in this row using col-id
-                estado_cell = row.locator("[col-id='estado']")
+            if await download_icon.count() == 0:
+                on_log("  [DEBUG] No se encontró ícono 'file_download' en primera fila")
+                on_log("  [DEBUG] Intentando selector alternativo...")
 
-                if await estado_cell.count() == 0:
-                    on_log(f"  [DEBUG] Fila {row_idx} no tiene celda 'estado'")
+                # Alternative: look for material-symbols with file_download
+                download_icon = first_row.locator("span.material-symbols-rounded:has-text('file_download')").first
+
+                if await download_icon.count() == 0:
+                    on_log("⚠ Archivo aún no listo en primera fila")
+                    await asyncio.sleep(10)
                     continue
 
-                # Get text content of the estado cell
-                try:
-                    estado_text = await estado_cell.inner_text(timeout=2000)
-                    estado_text = estado_text.strip()
+            on_log("  [DEBUG] Ícono de descarga encontrado")
 
-                    on_log(f"  [DEBUG] Fila {row_idx} estado: '{estado_text}'")
+            # Get the <a> tag that wraps the button (safer than clicking the icon)
+            # The <a> is a parent/ancestor of the icon
+            download_link = first_row.locator("a[download]").first
 
-                    if "Finalizado" in estado_text:
-                        on_log(f"  ✓ Fila {row_idx} tiene estado 'Finalizado'")
+            if await download_link.count() == 0:
+                on_log("  [WARNING] No se encontró <a download> en primera fila")
+                # Fallback: click on the icon's parent button
+                download_btn = download_icon.locator("xpath=ancestor::button[1]").first
 
-                        # Find download link in this row using col-id="filename"
-                        filename_cell = row.locator("[col-id='filename']")
-
-                        if await filename_cell.count() == 0:
-                            on_log(f"  [WARNING] Fila {row_idx} no tiene celda 'filename'")
-                            continue
-
-                        # Find the <a> tag with download attribute
-                        download_link = filename_cell.locator("a[download]").first
-
-                        if await download_link.count() == 0:
-                            on_log(f"  [WARNING] Fila {row_idx} no tiene link de descarga")
-                            continue
-
-                        # Get download filename
-                        download_filename = await download_link.get_attribute("download")
-                        on_log(f"  [DEBUG] Archivo: {download_filename}")
-
-                        # Optional: Validate it's our file
-                        # (could check if tax number is in row text)
-
-                        # Click the button inside the link
-                        download_btn = download_link.locator("button").first
-
-                        on_log(f"✓ Descargando archivo de fila {row_idx}...")
-
-                        try:
-                            async with page.expect_download(timeout=30000) as download_info:
-                                await download_btn.click()
-                                download = await download_info.value
-
-                            # Generate our filename
-                            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                            desde_fmt = fecha_desde.replace("/", "")
-                            hasta_fmt = fecha_hasta.replace("/", "")
-                            filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
-                            save_path = OUTPUT_DIR / filename
-
-                            # Save
-                            on_log(f"  [DEBUG] Guardando como: {save_path}")
-                            await download.save_as(save_path)
-                            on_log(f"✓ Archivo descargado: {save_path}")
-
-                            return str(save_path)
-
-                        except TimeoutError:
-                            on_log("  [ERROR] Timeout esperando descarga")
-                            continue
-                        except Exception as e:
-                            on_log(f"  [ERROR] Error descargando: {e}")
-                            continue
-
-                    else:
-                        on_log(f"  [DEBUG] Fila {row_idx} estado '{estado_text}' != 'Finalizado'")
-
-                except Exception as e:
-                    on_log(f"  [DEBUG] Error leyendo estado de fila {row_idx}: {e}")
+                if await download_btn.count() == 0:
+                    on_log("  [ERROR] No se encontró botón padre del ícono")
+                    await asyncio.sleep(10)
                     continue
 
-            on_log("⚠ Ninguna de las primeras 3 filas tiene estado 'Finalizado'")
+                element_to_click = download_btn
+                on_log("  [DEBUG] Usando botón padre para descarga")
+            else:
+                element_to_click = download_link
+                download_filename = await download_link.get_attribute("download")
+                on_log(f"  [DEBUG] Link de descarga: {download_filename}")
+
+            # Download
+            on_log("✓ Iniciando descarga desde primera fila...")
+
+            try:
+                async with page.expect_download(timeout=30000) as download_info:
+                    await element_to_click.click()
+                    download = await download_info.value
+
+                # Generate filename
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                desde_fmt = fecha_desde.replace("/", "")
+                hasta_fmt = fecha_hasta.replace("/", "")
+                filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
+                save_path = OUTPUT_DIR / filename
+
+                # Save
+                on_log(f"  [DEBUG] Guardando como: {save_path}")
+                await download.save_as(save_path)
+                on_log(f"✓ Archivo descargado: {save_path}")
+
+                return str(save_path)
+
+            except TimeoutError:
+                on_log("  [ERROR] Timeout esperando descarga")
+                await asyncio.sleep(10)
+                continue
+            except Exception as e:
+                on_log(f"  [ERROR] Error descargando: {e}")
+                await asyncio.sleep(10)
+                continue
 
         except Exception as e:
             import traceback
