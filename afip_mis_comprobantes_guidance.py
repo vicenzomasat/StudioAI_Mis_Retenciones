@@ -419,6 +419,12 @@ async def scrape_mis_comprobantes(
                 headless=False,
                 accept_downloads=True
             )
+
+            # Start tracing
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            await context.tracing.start(screenshots=True, snapshots=True)
+            on_log("Tracing iniciado")
+
             for p in context.pages:
                 await _apply_viewport(p)
 
@@ -477,6 +483,12 @@ async def scrape_mis_comprobantes(
             on_log("=" * 50)
             on_log(f"CSV Emitidos:  {csv_emitidos}")
             on_log(f"CSV Recibidos: {csv_recibidos}")
+
+            # Stop tracing
+            trace_filename = f"trace_mc_{timestamp}.zip"
+            trace_path = OUTPUT_DIR / trace_filename
+            await context.tracing.stop(path=str(trace_path))
+            on_log(f"Tracing guardado en: {trace_path}")
 
             return {
                 "emitidos": csv_emitidos,
