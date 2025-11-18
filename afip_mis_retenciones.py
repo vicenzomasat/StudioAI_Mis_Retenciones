@@ -22,18 +22,17 @@ import re
 import shutil
 import tempfile
 import threading
-import time
 import uuid
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional, Tuple, Dict, List
+from typing import Optional, Tuple, List
 from urllib.parse import urljoin
 
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-from playwright.async_api import async_playwright, TimeoutError, Download
+from playwright.async_api import async_playwright, TimeoutError
 from playwright.async_api import TimeoutError as PWTimeout
 
 
@@ -96,10 +95,6 @@ TAX_TYPES = [
     # Aduaneras
     TaxTypeConfig("ADU_217", "217 - SICORE-IMPTO.A LAS GANANCIAS", "Aduaneras", "fecha_solo"),
     TaxTypeConfig("ADU_767", "767 - SICORE - RETENCIONES Y PERCEPC", "Aduaneras", "fecha_solo"),
-    # Certificados SIRE
-    TaxTypeConfig("SIR_216", "216 - SIRE - IVA", "Certificados SIRE", "retencion"),
-    TaxTypeConfig("SIR_218", "218 - IMP.A LAS GAN.- BENEF.DEL EXT.", "Certificados SIRE", "retencion"),
-    TaxTypeConfig("SIR_353", "353 - RETENCIONES CONTRIB.SEG.SOCIAL", "Certificados SIRE", "ambas"),
 ]
 
 # Create a lookup dict
@@ -170,70 +165,6 @@ def convert_date_format_for_calendar(date_str: str) -> str:
     except Exception as e:
         logger.warning(f"Error converting date format '{date_str}': {e}. Returning original.")
         return date_str
-
-async def navigate_calendar_to_date_fast(page, target_year: int, target_month: int, on_log=print):
-    """Navigate v-calendar using year/month picker (faster).
-
-    Many v-calendar implementations allow clicking the title to open a year/month picker.
-
-    Args:
-        page: Playwright page
-        target_year: Target year (e.g., 2024)
-        target_month: Target month (1-12)
-        on_log: Logging function
-
-    Returns:
-        True if navigation successful, False if need to use fallback
-    """
-    try:
-        # Click en el título para abrir year/month picker
-        title_selector = '.vc-title, button.vc-title'
-        title = page.locator(title_selector).first
-        await title.wait_for(state="visible", timeout=3000)
-        on_log(f"  [DEBUG] Clickeando título del calendario para abrir picker")
-        await title.click()
-        await asyncio.sleep(0.5)
-
-        # Ahora debería aparecer un selector de año/mes
-        # Buscar el año objetivo
-        year_selector = f'button:has-text("{target_year}"), .vc-nav-item:has-text("{target_year}")'
-        year_btn = page.locator(year_selector).first
-
-        if await year_btn.count() > 0:
-            on_log(f"  [DEBUG] Seleccionando año {target_year} del picker")
-            await year_btn.click()
-            await asyncio.sleep(0.5)
-
-            # Seleccionar mes si es necesario
-            # v-calendar podría mostrar grid de meses después de seleccionar año
-            # Intentar clickear en el mes objetivo
-            month_names = ["January", "February", "March", "April", "May", "June",
-                          "July", "August", "September", "October", "November", "December"]
-            month_names_es = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-
-            target_month_name_en = month_names[target_month - 1]
-            target_month_name_es = month_names_es[target_month - 1]
-
-            # Intentar ambos idiomas
-            month_selector = f'button:has-text("{target_month_name_en}"), button:has-text("{target_month_name_es}"), .vc-nav-item:has-text("{target_month_name_en}"), .vc-nav-item:has-text("{target_month_name_es}")'
-            month_btn = page.locator(month_selector).first
-
-            if await month_btn.count() > 0:
-                on_log(f"  [DEBUG] Seleccionando mes {target_month_name_en}/{target_month_name_es}")
-                await month_btn.click()
-                await asyncio.sleep(0.5)
-
-            on_log(f"  ✓ Navegado a {target_month}/{target_year}")
-            return True
-        else:
-            on_log(f"  [WARNING] Year picker no disponible, calendario ya debe estar en fecha correcta")
-            return False
-
-    except Exception as e:
-        on_log(f"  [WARNING] No se pudo usar year picker: {e}")
-        on_log(f"  [INFO] Asumiendo que calendario ya está en mes/año correcto")
-        return False
 
 async def navigate_calendar_to_date_with_arrows(page, target_year: int, target_month: int, on_log=print):
     """Navigate v-calendar to target year/month using arrow buttons ONLY.
@@ -665,7 +596,11 @@ async def _fill_consulta_form(page, tax_code: str, operation_type: Optional[str]
     on_log("✓ Formulario completado")
 
 async def _click_consultar(page, on_log=print):
-    """Click the 'Consultar' button and wait for results."""
+    """Click the 'Consultar' button and wait for results.
+    
+    Returns:
+        bool: True if results found, False if "No hay resultados" message appears
+    """
     on_log("Haciendo click en Consultar...")
 
     consultar_btn = page.locator("#btnConsultarRetenciones, button#btnConsultarRetenciones")
@@ -677,12 +612,104 @@ async def _click_consultar(page, on_log=print):
     on_log("Esperando resultados...")
     await asyncio.sleep(3)
 
-    # Wait for the export button to appear (indicates results are loaded)
+    # NUEVO: Primero verificar si apareció el mensaje de "No hay resultados"
+    no_results_selectors = [
+        ".e-empty:has-text('No hay resultados para tu consulta')",
+        ".e-empty h4:has-text('No hay resultados')",
+        "#tablaResultados .e-empty",
+    ]
+    
+    for selector in no_results_selectors:
+        try:
+            no_results = page.locator(selector).first
+            if await no_results.count() > 0 and await no_results.is_visible():
+                on_log("⚠ No hay resultados para esta consulta")
+                
+                # Clickear "Volver a consultar" para poder continuar con el siguiente
+                on_log("  → Clickeando 'Volver a consultar'...")
+                try:
+                    volver_btn = page.locator("#btnNuevaBusqueda, button#btnNuevaBusqueda").first
+                    await volver_btn.wait_for(state="visible", timeout=5000)
+                    await volver_btn.click()
+                    await asyncio.sleep(1.5)
+                    on_log("  ✓ Volviendo a formulario de consulta")
+                except Exception as e:
+                    on_log(f"  ⚠ Error al clickear 'Volver a consultar': {e}")
+                
+                return False  # No hay resultados
+        except Exception:
+            continue
+
+    # Si llegamos acá, no encontramos el mensaje de "no hay resultados" inmediato
+    # Ahora verificar si apareció el botón de exportar y si está ENABLED
     try:
-        await page.wait_for_selector("#btnExportarOtrosFormatos, button#btnExportarOtrosFormatos", timeout=30000)
-        on_log("✓ Resultados cargados")
+        await page.wait_for_selector("#btnExportarOtrosFormatos, button#btnExportarOtrosFormatos", timeout=15000)
+        export_btn = page.locator("#btnExportarOtrosFormatos, button#btnExportarOtrosFormatos").first
+        
+        # CRITICAL: Verificar si el botón está ENABLED o DISABLED
+        is_enabled = await export_btn.is_enabled()
+        
+        if is_enabled:
+            on_log("✓ Resultados cargados - Botón exportar ENABLED")
+            return True  # Hay resultados reales
+        else:
+            # Botón está DISABLED → No hay datos reales
+            on_log("⚠ Botón exportar apareció pero está DISABLED")
+            on_log("  → Esperando mensaje 'No hay resultados'...")
+            
+            # Esperar un poco más a que aparezca el mensaje
+            await asyncio.sleep(2)
+            
+            # Verificar nuevamente si apareció el mensaje de "No hay resultados"
+            for selector in no_results_selectors:
+                try:
+                    no_results = page.locator(selector).first
+                    if await no_results.count() > 0 and await no_results.is_visible():
+                        on_log("  ✓ Confirmado: No hay resultados para esta consulta")
+                        
+                        # Clickear "Volver a consultar"
+                        try:
+                            volver_btn = page.locator("#btnNuevaBusqueda, button#btnNuevaBusqueda").first
+                            await volver_btn.wait_for(state="visible", timeout=5000)
+                            await volver_btn.click()
+                            await asyncio.sleep(1.5)
+                            on_log("  ✓ Volviendo a formulario de consulta")
+                        except Exception as e:
+                            on_log(f"  ⚠ Error al clickear 'Volver a consultar': {e}")
+                        
+                        return False  # No hay resultados
+                except Exception:
+                    continue
+            
+            # Si llegamos acá, el botón está disabled pero no apareció el mensaje
+            # Asumir que no hay datos de todas formas
+            on_log("  ⚠ Botón disabled sin mensaje claro - asumiendo sin datos")
+            try:
+                volver_btn = page.locator("#btnNuevaBusqueda, button#btnNuevaBusqueda").first
+                if await volver_btn.count() > 0:
+                    await volver_btn.click()
+                    await asyncio.sleep(1.5)
+            except Exception:
+                pass
+            
+            return False
+            
     except TimeoutError:
-        on_log("⚠ Botón de exportar no apareció. Es posible que no haya resultados.")
+        # Timeout esperando botón de exportar (ni siquiera apareció)
+        on_log("⚠ Timeout esperando botón exportar (no apareció)")
+        on_log("  → Asumiendo que no hay datos e intentando volver...")
+        
+        # Intentar volver igual por si acaso
+        try:
+            volver_btn = page.locator("#btnNuevaBusqueda, button#btnNuevaBusqueda").first
+            if await volver_btn.count() > 0:
+                await volver_btn.click()
+                await asyncio.sleep(1.5)
+        except Exception:
+            pass
+        
+        return False  # Asumir que no hay resultados
+
 
 async def _export_csv(page, on_log=print):
     """Click the Export dropdown and select CSV."""
@@ -990,6 +1017,54 @@ async def _wait_and_download_file(
                 on_log(f"  [WARN] Mechanism B failed: {e}")
 
         # ---------------- Mechanism C: programmatic click & new-tab handling (target='_blank') ----------------
+async def _process_single_operation(
+    page, 
+    tax_config, 
+    op_value, 
+    op_name, 
+    fecha_desde, 
+    fecha_hasta,
+    cuit_target,
+    on_log=print
+):
+    """Process a single operation (retención/percepción) for a tax type.
+    
+    Returns:
+        Optional[str]: File path if successful, None if no results
+    """
+    on_log(f"  → {op_name}")
+    
+    try:
+        # Fill the form
+        await _fill_consulta_form(page, tax_config.code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
+
+        # Click Consultar and check if there are results
+        has_results = await _click_consultar(page, on_log=on_log)
+        
+        if not has_results:
+            on_log(f"  ⏭️  Sin datos para {op_name} - continuando...")
+            return None
+
+        # Si hay resultados, proceder con la exportación
+        await _export_csv(page, on_log=on_log)
+        await _handle_export_popup(page, on_log=on_log)
+        
+        file_path = await _wait_and_download_file(
+            page, tax_config.code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
+        )
+        
+        on_log(f"  ✓ {op_name} completado")
+        return file_path
+        
+    except Exception as e:
+        on_log(f"  ❌ Error en {op_name}: {e}")
+        # Intentar volver a formulario
+        try:
+            await _navigate_to_nueva_consulta(page, on_log=on_log)
+        except:
+            pass
+        return None
+
         # Your anchor uses target="_blank"; we catch a popup and then the download.
         try:
             on_log("  [DEBUG] Mechanism C: JS click + expect new page + expect download")
@@ -1129,30 +1204,26 @@ async def scrape_mis_retenciones(
                     on_log(f"PROCESANDO: {tax_config.name} - {op_name}")
                     on_log("=" * 60)
 
-                    # Fill the form
-                    await _fill_consulta_form(mr_page, tax_code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
-
-                    # Click Consultar
-                    await _click_consultar(mr_page, on_log=on_log)
-
-                    # Export to CSV
-                    await _export_csv(mr_page, on_log=on_log)
-
-                    # Handle popup and navigate to "Consultas exportadas"
-                    await _handle_export_popup(mr_page, on_log=on_log)
-
-                    # Wait for file and download
-                    file_path = await _wait_and_download_file(
-                        mr_page, tax_code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
+                    file_path = await _process_single_operation(
+                        mr_page,
+                        tax_config,
+                        op_value,
+                        op_name,
+                        fecha_desde,
+                        fecha_hasta,
+                        cuit_target,
+                        on_log=on_log
                     )
-                    downloaded_files.append(file_path)
+                    
+                    if file_path:
+                        downloaded_files.append(file_path)
+                    else:
+                        on_log(f"⚠ No se descargó archivo para {op_name} (sin datos)")
 
                     # If there are more operations, navigate back to "Nueva consulta"
                     if len(operations_to_run) > 1 and op_value != operations_to_run[-1][0]:
                         on_log("Navegando a 'Nueva consulta' para siguiente operación...")
-                        nueva_consulta_tab = mr_page.locator("button#tabNuevaConsulta-tab, button[aria-controls='tabNuevaConsulta']").first
-                        await nueva_consulta_tab.click()
-                        await asyncio.sleep(2)
+                        await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
 
                 # COMPLETADO
                 on_log("")
@@ -1324,42 +1395,28 @@ async def scrape_mis_retenciones_batch(
 
                     # Process each operation for this tax type
                     for op_value, op_name in operations_to_run:
-                        on_log(f"  → {op_name}")
-
-                        try:
-                            # Fill the form
-                            await _fill_consulta_form(mr_page, tax_config.code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
-
-                            # Click Consultar
-                            await _click_consultar(mr_page, on_log=on_log)
-
-                            # Export to CSV
-                            await _export_csv(mr_page, on_log=on_log)
-
-                            # Handle popup and navigate to "Consultas exportadas"
-                            await _handle_export_popup(mr_page, on_log=on_log)
-
-                            # Wait for file and download
-                            file_path = await _wait_and_download_file(
-                                mr_page, tax_config.code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
-                            )
-
+                        file_path = await _process_single_operation(
+                            mr_page,
+                            tax_config,
+                            op_value,
+                            op_name,
+                            fecha_desde,
+                            fecha_hasta,
+                            cuit_target,
+                            on_log=on_log
+                        )
+                        
+                        if file_path:
                             progress.all_downloaded_files.append(file_path)
                             save_checkpoint(progress)
-
-                            on_log(f"  ✓ {op_name} completado")
-
-                            # Navigate back to "Nueva consulta" for next operation/tax type
-                            if op_value != operations_to_run[-1][0] or idx < len(TAX_TYPES):
-                                await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
-
-                        except Exception as e:
-                            on_log(f"  ❌ Error en {op_name}: {e}")
-                            # Continue with next operation
-                            try:
-                                await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
-                            except:
-                                pass
+                        
+                        # Navigate back to "Nueva consulta" for next operation/tax type
+                        # (only if not the last operation AND not last tax type)
+                        is_last_op = (op_value == operations_to_run[-1][0])
+                        is_last_tax = (idx == len(TAX_TYPES))
+                        
+                        if not (is_last_op and is_last_tax):
+                            await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
 
                     # Mark this tax type as completed
                     progress.completed_tax_codes.append(tax_config.code)
