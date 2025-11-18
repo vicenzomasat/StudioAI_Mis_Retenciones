@@ -828,7 +828,7 @@ async def _handle_export_popup(page, on_log=print):
 
     await asyncio.sleep(2)
 
-async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=10):
+async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=2):
     """Download file using simplest possible approach - just click the download icon in first row."""
     on_log("Esperando a que el archivo esté listo...")
 
@@ -994,6 +994,8 @@ async def scrape_mis_retenciones(
     on_log(f"Usando profile temporal: {temp_dir}")
 
     downloaded_files = []
+    context = None
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     try:
         async with async_playwright() as pw:
@@ -1003,89 +1005,93 @@ async def scrape_mis_retenciones(
                 accept_downloads=True
             )
 
-            # Start tracing
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            await context.tracing.start(screenshots=True, snapshots=True)
-            on_log("Tracing iniciado")
+            try:
+                # Start tracing
+                await context.tracing.start(screenshots=True, snapshots=True, sources=True)
+                on_log("Tracing iniciado")
 
-            for p in context.pages:
-                await _apply_viewport(p)
+                for p in context.pages:
+                    await _apply_viewport(p)
 
-            # Login
-            portal = await _afip_login(context, cuit_login, clave, on_log=on_log)
+                # Login
+                portal = await _afip_login(context, cuit_login, clave, on_log=on_log)
 
-            # Open MIS RETENCIONES
-            mr_page = await _open_mis_retenciones(context, portal, on_log=on_log)
+                # Open MIS RETENCIONES
+                mr_page = await _open_mis_retenciones(context, portal, on_log=on_log)
 
-            # Select CUIT target (representado)
-            await _select_cuit_representado(mr_page, cuit_target, on_log=on_log)
+                # Select CUIT target (representado)
+                await _select_cuit_representado(mr_page, cuit_target, on_log=on_log)
 
-            # Determine operation type(s) based on tax configuration
-            operations_to_run = []
+                # Determine operation type(s) based on tax configuration
+                operations_to_run = []
 
-            if tax_config.operation_mode == "retencion":
-                operations_to_run = [("1", "Retención")]
-            elif tax_config.operation_mode == "percepcion":
-                operations_to_run = [("2", "Percepción")]
-            elif tax_config.operation_mode == "ambas":
-                operations_to_run = [("0", "Retención y percepción")]
-            elif tax_config.operation_mode == "ambas_separadas":
-                # Do 2 separate queries: first retención, then percepción
-                operations_to_run = [("1", "Retención"), ("2", "Percepción")]
-            elif tax_config.operation_mode == "fecha_solo":
-                # No operation type field for aduaneras
-                operations_to_run = [(None, "Solo fecha")]
+                if tax_config.operation_mode == "retencion":
+                    operations_to_run = [("1", "Retención")]
+                elif tax_config.operation_mode == "percepcion":
+                    operations_to_run = [("2", "Percepción")]
+                elif tax_config.operation_mode == "ambas":
+                    operations_to_run = [("0", "Retención y percepción")]
+                elif tax_config.operation_mode == "ambas_separadas":
+                    # Do 2 separate queries: first retención, then percepción
+                    operations_to_run = [("1", "Retención"), ("2", "Percepción")]
+                elif tax_config.operation_mode == "fecha_solo":
+                    # No operation type field for aduaneras
+                    operations_to_run = [(None, "Solo fecha")]
 
-            # Process each operation
-            for op_value, op_name in operations_to_run:
+                # Process each operation
+                for op_value, op_name in operations_to_run:
+                    on_log("")
+                    on_log("=" * 60)
+                    on_log(f"PROCESANDO: {tax_config.name} - {op_name}")
+                    on_log("=" * 60)
+
+                    # Fill the form
+                    await _fill_consulta_form(mr_page, tax_code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
+
+                    # Click Consultar
+                    await _click_consultar(mr_page, on_log=on_log)
+
+                    # Export to CSV
+                    await _export_csv(mr_page, on_log=on_log)
+
+                    # Handle popup and navigate to "Consultas exportadas"
+                    await _handle_export_popup(mr_page, on_log=on_log)
+
+                    # Wait for file and download
+                    file_path = await _wait_and_download_file(
+                        mr_page, tax_code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
+                    )
+                    downloaded_files.append(file_path)
+
+                    # If there are more operations, navigate back to "Nueva consulta"
+                    if len(operations_to_run) > 1 and op_value != operations_to_run[-1][0]:
+                        on_log("Navegando a 'Nueva consulta' para siguiente operación...")
+                        nueva_consulta_tab = mr_page.locator("button#tabNuevaConsulta-tab, button[aria-controls='tabNuevaConsulta']").first
+                        await nueva_consulta_tab.click()
+                        await asyncio.sleep(2)
+
+                # COMPLETADO
                 on_log("")
                 on_log("=" * 60)
-                on_log(f"PROCESANDO: {tax_config.name} - {op_name}")
+                on_log("✅ PROCESO COMPLETADO 🎉")
                 on_log("=" * 60)
+                for idx, file in enumerate(downloaded_files, 1):
+                    on_log(f"Archivo {idx}: {file}")
 
-                # Fill the form
-                await _fill_consulta_form(mr_page, tax_code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
+                return {
+                    "files": downloaded_files,
+                    "tax_type": tax_config.name
+                }
 
-                # Click Consultar
-                await _click_consultar(mr_page, on_log=on_log)
-
-                # Export to CSV
-                await _export_csv(mr_page, on_log=on_log)
-
-                # Handle popup and navigate to "Consultas exportadas"
-                await _handle_export_popup(mr_page, on_log=on_log)
-
-                # Wait for file and download
-                file_path = await _wait_and_download_file(
-                    mr_page, tax_code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
-                )
-                downloaded_files.append(file_path)
-
-                # If there are more operations, navigate back to "Nueva consulta"
-                if len(operations_to_run) > 1 and op_value != operations_to_run[-1][0]:
-                    on_log("Navegando a 'Nueva consulta' para siguiente operación...")
-                    nueva_consulta_tab = mr_page.locator("button#tabNuevaConsulta-tab, button[aria-controls='tabNuevaConsulta']").first
-                    await nueva_consulta_tab.click()
-                    await asyncio.sleep(2)
-
-            # COMPLETADO
-            on_log("")
-            on_log("=" * 60)
-            on_log("✅ PROCESO COMPLETADO 🎉")
-            on_log("=" * 60)
-            for idx, file in enumerate(downloaded_files, 1):
-                on_log(f"Archivo {idx}: {file}")
-
-            # Stop tracing
-            trace_filename = f"trace_{timestamp}.zip"
-            trace_path = OUTPUT_DIR / trace_filename
-            await context.tracing.stop(path=str(trace_path))
-            on_log(f"Tracing guardado en: {trace_path}")
-
-            return {
-                "files": downloaded_files,
-                "tax_type": tax_config.name
-            }
+            finally:
+                # Save tracing ALWAYS - DENTRO del async with para que context esté vivo
+                try:
+                    trace_filename = f"trace_{timestamp}.zip"
+                    trace_path = OUTPUT_DIR / trace_filename
+                    await context.tracing.stop(path=str(trace_path))
+                    on_log(f"✓ Tracing guardado en: {trace_path}")
+                except Exception as e:
+                    on_log(f"⚠ No se pudo guardar tracing: {e}")
 
     finally:
         try:
@@ -1171,6 +1177,8 @@ async def scrape_mis_retenciones_batch(
     temp_profile.mkdir(parents=True, exist_ok=True)
     temp_dir = str(temp_profile)
 
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
     try:
         async with async_playwright() as pw:
             context = await pw.chromium.launch_persistent_context(
@@ -1179,131 +1187,135 @@ async def scrape_mis_retenciones_batch(
                 accept_downloads=True
             )
 
-            # Start tracing
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            await context.tracing.start(screenshots=True, snapshots=True)
-            on_log("Tracing iniciado")
+            try:
+                # Start tracing
+                await context.tracing.start(screenshots=True, snapshots=True, sources=True)
+                on_log("Tracing iniciado")
 
-            for p in context.pages:
-                await _apply_viewport(p)
+                for p in context.pages:
+                    await _apply_viewport(p)
 
-            # Login
-            portal = await _afip_login(context, cuit_login, clave, on_log=on_log)
+                # Login
+                portal = await _afip_login(context, cuit_login, clave, on_log=on_log)
 
-            # Open MIS RETENCIONES
-            mr_page = await _open_mis_retenciones(context, portal, on_log=on_log)
+                # Open MIS RETENCIONES
+                mr_page = await _open_mis_retenciones(context, portal, on_log=on_log)
 
-            # Select CUIT target (representado)
-            await _select_cuit_representado(mr_page, cuit_target, on_log=on_log)
+                # Select CUIT target (representado)
+                await _select_cuit_representado(mr_page, cuit_target, on_log=on_log)
 
-            # Process each tax type
-            for idx, tax_config in enumerate(TAX_TYPES, 1):
-                # Skip if already completed
-                if tax_config.code in progress.completed_tax_codes:
-                    on_log(f"⏭️  [{idx}/{len(TAX_TYPES)}] Saltando {tax_config.name} (ya completado)")
-                    continue
+                # Process each tax type
+                for idx, tax_config in enumerate(TAX_TYPES, 1):
+                    # Skip if already completed
+                    if tax_config.code in progress.completed_tax_codes:
+                        on_log(f"⏭️  [{idx}/{len(TAX_TYPES)}] Saltando {tax_config.name} (ya completado)")
+                        continue
+
+                    on_log("")
+                    on_log("=" * 70)
+                    on_log(f"📋 [{idx}/{len(TAX_TYPES)}] PROCESANDO: {tax_config.name}")
+                    on_log(f"Categoría: {tax_config.category}")
+                    on_log(f"Modo: {tax_config.operation_mode}")
+                    on_log("=" * 70)
+
+                    # Update current tax in progress
+                    progress.current_tax_code = tax_config.code
+                    save_checkpoint(progress)
+
+                    # Determine operation type(s) based on tax configuration
+                    operations_to_run = []
+
+                    if tax_config.operation_mode == "retencion":
+                        operations_to_run = [("1", "Retención")]
+                    elif tax_config.operation_mode == "percepcion":
+                        operations_to_run = [("2", "Percepción")]
+                    elif tax_config.operation_mode == "ambas":
+                        operations_to_run = [("0", "Retención y percepción")]
+                    elif tax_config.operation_mode == "ambas_separadas":
+                        # Do 2 separate queries: first retención, then percepción
+                        operations_to_run = [("1", "Retención"), ("2", "Percepción")]
+                    elif tax_config.operation_mode == "fecha_solo":
+                        # No operation type field for aduaneras
+                        operations_to_run = [(None, "Solo fecha")]
+
+                    # Process each operation for this tax type
+                    for op_value, op_name in operations_to_run:
+                        on_log(f"  → {op_name}")
+
+                        try:
+                            # Fill the form
+                            await _fill_consulta_form(mr_page, tax_config.code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
+
+                            # Click Consultar
+                            await _click_consultar(mr_page, on_log=on_log)
+
+                            # Export to CSV
+                            await _export_csv(mr_page, on_log=on_log)
+
+                            # Handle popup and navigate to "Consultas exportadas"
+                            await _handle_export_popup(mr_page, on_log=on_log)
+
+                            # Wait for file and download
+                            file_path = await _wait_and_download_file(
+                                mr_page, tax_config.code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
+                            )
+
+                            progress.all_downloaded_files.append(file_path)
+                            save_checkpoint(progress)
+
+                            on_log(f"  ✓ {op_name} completado")
+
+                            # Navigate back to "Nueva consulta" for next operation/tax type
+                            if op_value != operations_to_run[-1][0] or idx < len(TAX_TYPES):
+                                await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
+
+                        except Exception as e:
+                            on_log(f"  ❌ Error en {op_name}: {e}")
+                            # Continue with next operation
+                            try:
+                                await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
+                            except:
+                                pass
+
+                    # Mark this tax type as completed
+                    progress.completed_tax_codes.append(tax_config.code)
+                    progress.current_tax_code = None
+                    save_checkpoint(progress)
+
+                    on_log(f"✅ [{idx}/{len(TAX_TYPES)}] {tax_config.name} COMPLETADO")
+                    on_log(f"Progreso general: {len(progress.completed_tax_codes)}/{len(TAX_TYPES)}")
+
+                # All completed
+                progress.status = "completed"
+                save_checkpoint(progress)
 
                 on_log("")
                 on_log("=" * 70)
-                on_log(f"📋 [{idx}/{len(TAX_TYPES)}] PROCESANDO: {tax_config.name}")
-                on_log(f"Categoría: {tax_config.category}")
-                on_log(f"Modo: {tax_config.operation_mode}")
+                on_log("🎉 BATCH PROCESS COMPLETADO 🎉")
                 on_log("=" * 70)
+                on_log(f"Total de archivos descargados: {len(progress.all_downloaded_files)}")
+                on_log(f"Tipos de impuestos procesados: {len(progress.completed_tax_codes)}")
+                on_log("")
+                on_log("Archivos:")
+                for idx, file_path in enumerate(progress.all_downloaded_files, 1):
+                    on_log(f"  {idx}. {file_path}")
 
-                # Update current tax in progress
-                progress.current_tax_code = tax_config.code
-                save_checkpoint(progress)
+                return {
+                    "session_id": progress.session_id,
+                    "files": progress.all_downloaded_files,
+                    "completed_count": len(progress.completed_tax_codes),
+                    "total_count": len(TAX_TYPES)
+                }
 
-                # Determine operation type(s) based on tax configuration
-                operations_to_run = []
-
-                if tax_config.operation_mode == "retencion":
-                    operations_to_run = [("1", "Retención")]
-                elif tax_config.operation_mode == "percepcion":
-                    operations_to_run = [("2", "Percepción")]
-                elif tax_config.operation_mode == "ambas":
-                    operations_to_run = [("0", "Retención y percepción")]
-                elif tax_config.operation_mode == "ambas_separadas":
-                    # Do 2 separate queries: first retención, then percepción
-                    operations_to_run = [("1", "Retención"), ("2", "Percepción")]
-                elif tax_config.operation_mode == "fecha_solo":
-                    # No operation type field for aduaneras
-                    operations_to_run = [(None, "Solo fecha")]
-
-                # Process each operation for this tax type
-                for op_value, op_name in operations_to_run:
-                    on_log(f"  → {op_name}")
-
-                    try:
-                        # Fill the form
-                        await _fill_consulta_form(mr_page, tax_config.code, op_value, fecha_desde, fecha_hasta, on_log=on_log)
-
-                        # Click Consultar
-                        await _click_consultar(mr_page, on_log=on_log)
-
-                        # Export to CSV
-                        await _export_csv(mr_page, on_log=on_log)
-
-                        # Handle popup and navigate to "Consultas exportadas"
-                        await _handle_export_popup(mr_page, on_log=on_log)
-
-                        # Wait for file and download
-                        file_path = await _wait_and_download_file(
-                            mr_page, tax_config.code, cuit_target, fecha_desde, fecha_hasta, on_log=on_log
-                        )
-
-                        progress.all_downloaded_files.append(file_path)
-                        save_checkpoint(progress)
-
-                        on_log(f"  ✓ {op_name} completado")
-
-                        # Navigate back to "Nueva consulta" for next operation/tax type
-                        if op_value != operations_to_run[-1][0] or idx < len(TAX_TYPES):
-                            await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
-
-                    except Exception as e:
-                        on_log(f"  ❌ Error en {op_name}: {e}")
-                        # Continue with next operation
-                        try:
-                            await _navigate_to_nueva_consulta(mr_page, on_log=on_log)
-                        except:
-                            pass
-
-                # Mark this tax type as completed
-                progress.completed_tax_codes.append(tax_config.code)
-                progress.current_tax_code = None
-                save_checkpoint(progress)
-
-                on_log(f"✅ [{idx}/{len(TAX_TYPES)}] {tax_config.name} COMPLETADO")
-                on_log(f"Progreso general: {len(progress.completed_tax_codes)}/{len(TAX_TYPES)}")
-
-            # All completed
-            progress.status = "completed"
-            save_checkpoint(progress)
-
-            on_log("")
-            on_log("=" * 70)
-            on_log("🎉 BATCH PROCESS COMPLETADO 🎉")
-            on_log("=" * 70)
-            on_log(f"Total de archivos descargados: {len(progress.all_downloaded_files)}")
-            on_log(f"Tipos de impuestos procesados: {len(progress.completed_tax_codes)}")
-            on_log("")
-            on_log("Archivos:")
-            for idx, file_path in enumerate(progress.all_downloaded_files, 1):
-                on_log(f"  {idx}. {file_path}")
-
-            # Stop tracing
-            trace_filename = f"trace_batch_{timestamp}.zip"
-            trace_path = OUTPUT_DIR / trace_filename
-            await context.tracing.stop(path=str(trace_path))
-            on_log(f"Tracing guardado en: {trace_path}")
-
-            return {
-                "session_id": progress.session_id,
-                "files": progress.all_downloaded_files,
-                "completed_count": len(progress.completed_tax_codes),
-                "total_count": len(TAX_TYPES)
-            }
+            finally:
+                # Save tracing ALWAYS - DENTRO del async with para que context esté vivo
+                try:
+                    trace_filename = f"trace_batch_{timestamp}.zip"
+                    trace_path = OUTPUT_DIR / trace_filename
+                    await context.tracing.stop(path=str(trace_path))
+                    on_log(f"✓ Tracing guardado en: {trace_path}")
+                except Exception as e:
+                    on_log(f"⚠ No se pudo guardar tracing: {e}")
 
     except Exception as e:
         progress.status = "error"
