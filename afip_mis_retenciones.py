@@ -28,11 +28,13 @@ from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional, Tuple, Dict, List
+from urllib.parse import urljoin
 
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 from playwright.async_api import async_playwright, TimeoutError, Download
+from playwright.async_api import TimeoutError as PWTimeout
 
 
 logger = logging.getLogger(__name__)
@@ -828,131 +830,213 @@ async def _handle_export_popup(page, on_log=print):
 
     await asyncio.sleep(2)
 
-async def _wait_and_download_file(page, tax_code: str, cuit_target: str, fecha_desde: str, fecha_hasta: str, on_log=print, max_wait_minutes=2):
-    """Download file using simplest possible approach - just click the download icon in first row."""
+async def _resolve_first_row_download_anchor(page, on_log=print):
+    """Return the <a download> for row 0 in the CENTER container, with many fallbacks."""
+    center = page.locator(".ag-center-cols-container").first
+    await center.wait_for(timeout=15000)
+
+    # Make sure some rows exist (AG Grid can be slow to paint)
+    if await center.locator('.ag-row[role="row"]').count() == 0:
+        await page.wait_for_selector('.ag-center-cols-container .ag-row[role="row"]', timeout=15000)
+
+    # Ordered selector strategies (strongest → weakest)
+    strategies = [
+        # 1) Most direct: row-index=0 + filename column + anchor with download
+        '.ag-row[row-index="0"] [col-id="filename"] a[download]',
+        # 2) Same via ARIA column index (6 in your dump)
+        '.ag-row[row-index="0"] [role="gridcell"][aria-colindex="6"] a[download]',
+        # 3) First visible row → filename column → anchor
+        '.ag-row[role="row"]:nth-match(1) [col-id="filename"] a[download]',
+        # 4) First visible row → any a[download] (if col-id moved)
+        '.ag-row[role="row"]:nth-match(1) a[download]',
+    ]
+
+    for idx, sel in enumerate(strategies, 1):
+        loc = center.locator(sel).first
+        try:
+            if await loc.count() > 0:
+                await loc.wait_for(state="visible", timeout=4000)
+                on_log(f"  [DEBUG] Selector strategy #{idx} matched: {sel}")
+                return loc
+        except Exception:
+            on_log(f"  [DEBUG] Selector strategy #{idx} no match: {sel}")
+
+    # 5) Sweep: check all anchors in filename column; pick the one whose closest row has row-index="0"
+    anchors = center.locator('[col-id="filename"] a[download]')
+    if await anchors.count() > 0:
+        n = await anchors.count()
+        for i in range(min(n, 20)):
+            a = anchors.nth(i)
+            try:
+                row_ix = await a.evaluate("el => el.closest('.ag-row')?.getAttribute('row-index')")
+                if row_ix == "0":
+                    on_log("  [DEBUG] Sweep found row-index=0 anchor")
+                    return a
+            except Exception:
+                continue
+
+        # As an ultra‑last fallback, if row-index probing fails, take the first visible anchor in the center
+        on_log("  [DEBUG] Sweep fallback: using first visible anchor in center container")
+        return anchors.first
+
+    return None
+
+async def _wait_and_download_file(
+    page,
+    tax_code: str,
+    cuit_target: str,
+    fecha_desde: str,
+    fecha_hasta: str,
+    on_log=print,
+    max_wait_minutes=2
+):
+    """Click the first-row download, with multiple selector + transport fallbacks.
+       No dependence on 'Finalizado'. Works against AG Grid's center container."""
     on_log("Esperando a que el archivo esté listo...")
 
-    # Navigate to tab
+    # Make sure we're on the right tab
     try:
         tab_btn = page.locator("button#tabConsultasExportdas-tab, button[aria-controls='tabConsultasExportdas']").first
         if await tab_btn.count():
             await tab_btn.click()
-            await asyncio.sleep(2)
+            await asyncio.sleep(1.5)
     except Exception:
         pass
+
+    # Give the back-end a moment to register the export entry
+    await asyncio.sleep(5)
 
     max_attempts = max_wait_minutes * 6
     attempt = 0
 
-    # Initial wait
-    on_log("  [DEBUG] Esperando 5 segundos para que el archivo se registre...")
-    await asyncio.sleep(5)
-
     while attempt < max_attempts:
         attempt += 1
-        on_log(f"Intento {attempt}/{max_attempts}: Buscando archivo...")
+        on_log(f"Intento {attempt}/{max_attempts}: buscando fila 0 y su ancla de descarga...")
 
-        # Refresh
+        # 1) Refresh the grid (button present in your DOM)
         try:
             refresh_btn = page.locator("#btnRecargarTablaAplicativo, button#btnRecargarTablaAplicativo").first
-            await refresh_btn.wait_for(state="visible", timeout=5000)
-            await refresh_btn.click()
-            await asyncio.sleep(2)
+            if await refresh_btn.count():
+                await refresh_btn.click()
+                await asyncio.sleep(1.2)
         except Exception as e:
-            on_log(f"⚠ Botón refresh no encontrado: {e}")
+            on_log(f"  [DEBUG] refresh skip: {e}")
 
+        # 2) Resolve the <a download> for row 0 using many strategies (center container only)
+        anchor = await _resolve_first_row_download_anchor(page, on_log=on_log)
+
+        if not anchor or (await anchor.count() == 0):
+            on_log("  [DEBUG] No anchor yet; sleeping 6s and retrying…")
+            await asyncio.sleep(6)
+            continue
+
+        await anchor.scroll_into_view_if_needed()
+
+        # Always capture the href up front for non-click fallbacks
+        href = None
         try:
-            # Strategy: Find first row + file_download icon
-            on_log("  [DEBUG] Buscando primera fila y botón de descarga...")
+            href = await anchor.get_attribute("href")
+        except Exception:
+            pass
 
-            # Get first row specifically
-            first_row = page.locator(".ag-row[row-index='0']").first
+        # Build a friendly filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        desde_fmt = fecha_desde.replace("/", "")
+        hasta_fmt = fecha_hasta.replace("/", "")
+        filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
+        save_path = OUTPUT_DIR / filename
 
-            if await first_row.count() == 0:
-                on_log("⚠ No se encontró fila con row-index='0'")
-                await asyncio.sleep(10)
-                continue
+        # ---------------- Mechanism A: normal click with expect_download ----------------
+        try:
+            on_log("  [DEBUG] Mechanism A: expect_download + click()")
+            async with page.expect_download(timeout=30000) as di:
+                # Try a gentle click first
+                await anchor.click()
+            download = await di.value
+            await download.save_as(save_path)
+            on_log(f"✓ Archivo descargado (A): {save_path}")
+            return str(save_path)
 
-            on_log("  [DEBUG] Primera fila encontrada")
-
-            # Find the file_download icon inside this row
-            # Use the text content of the span to find it
-            download_icon = first_row.locator("span.e-icon:has-text('file_download')").first
-
-            if await download_icon.count() == 0:
-                on_log("  [DEBUG] No se encontró ícono 'file_download' en primera fila")
-                on_log("  [DEBUG] Intentando selector alternativo...")
-
-                # Alternative: look for material-symbols with file_download
-                download_icon = first_row.locator("span.material-symbols-rounded:has-text('file_download')").first
-
-                if await download_icon.count() == 0:
-                    on_log("⚠ Archivo aún no listo en primera fila")
-                    await asyncio.sleep(10)
-                    continue
-
-            on_log("  [DEBUG] Ícono de descarga encontrado")
-
-            # Get the <a> tag that wraps the button (safer than clicking the icon)
-            # The <a> is a parent/ancestor of the icon
-            download_link = first_row.locator("a[download]").first
-
-            if await download_link.count() == 0:
-                on_log("  [WARNING] No se encontró <a download> en primera fila")
-                # Fallback: click on the icon's parent button
-                download_btn = download_icon.locator("xpath=ancestor::button[1]").first
-
-                if await download_btn.count() == 0:
-                    on_log("  [ERROR] No se encontró botón padre del ícono")
-                    await asyncio.sleep(10)
-                    continue
-
-                element_to_click = download_btn
-                on_log("  [DEBUG] Usando botón padre para descarga")
-            else:
-                element_to_click = download_link
-                download_filename = await download_link.get_attribute("download")
-                on_log(f"  [DEBUG] Link de descarga: {download_filename}")
-
-            # Download
-            on_log("✓ Iniciando descarga desde primera fila...")
-
+        except PWTimeout:
+            on_log("  [WARN] A1 timeout; will try A2 force-click")
             try:
-                async with page.expect_download(timeout=30000) as download_info:
-                    await element_to_click.click()
-                    download = await download_info.value
-
-                # Generate filename
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                desde_fmt = fecha_desde.replace("/", "")
-                hasta_fmt = fecha_hasta.replace("/", "")
-                filename = f"MR_{tax_code}_{cuit_target}_{desde_fmt}_{hasta_fmt}_{timestamp}.csv"
-                save_path = OUTPUT_DIR / filename
-
-                # Save
-                on_log(f"  [DEBUG] Guardando como: {save_path}")
+                async with page.expect_download(timeout=30000) as di:
+                    await anchor.click(force=True)
+                download = await di.value
                 await download.save_as(save_path)
-                on_log(f"✓ Archivo descargado: {save_path}")
-
+                on_log(f"✓ Archivo descargado (A2 force): {save_path}")
                 return str(save_path)
-
-            except TimeoutError:
-                on_log("  [ERROR] Timeout esperando descarga")
-                await asyncio.sleep(10)
-                continue
             except Exception as e:
-                on_log(f"  [ERROR] Error descargando: {e}")
-                await asyncio.sleep(10)
-                continue
+                on_log(f"  [WARN] A2 failed: {e}")
 
         except Exception as e:
-            import traceback
-            on_log(f"⚠ Error: {e}")
-            on_log(f"  [DEBUG] Traceback:\n{traceback.format_exc()}")
+            on_log(f"  [WARN] Mechanism A failed: {e}")
 
-        await asyncio.sleep(10)
+        # ---------------- Mechanism B: direct authenticated GET via context.request ----------------
+        # The HTML shows the anchor has a proper absolute/relative href and a download attribute.
+        if href:
+            try:
+                url = urljoin(page.url, href)
+                on_log("  [DEBUG] Mechanism B: HTTP GET through browser context")
+                resp = await page.context.request.get(url)
+                if not resp.ok:
+                    raise RuntimeError(f"HTTP {resp.status}")
+                content = await resp.body()
+                with open(save_path, "wb") as f:
+                    f.write(content)
+                on_log(f"✓ Archivo descargado (B HTTP): {save_path}")
+                return str(save_path)
+            except Exception as e:
+                on_log(f"  [WARN] Mechanism B failed: {e}")
 
-    raise TimeoutError(f"Archivo no listo después de {max_wait_minutes} minutos")
+        # ---------------- Mechanism C: programmatic click & new-tab handling (target='_blank') ----------------
+        # Your anchor uses target="_blank"; we catch a popup and then the download.
+        try:
+            on_log("  [DEBUG] Mechanism C: JS click + expect new page + expect download")
+            handle = await anchor.element_handle()
+            # Fire the click and wait for a popup (some deployments open a blank tab then trigger download)
+            async with page.context.expect_page(timeout=5000) as newp_info:
+                await page.evaluate("(el) => el.click()", handle)
+            newp = await newp_info.value
+
+            # Either the download starts immediately, or the new tab renders then initiates download
+            try:
+                async with newp.expect_download(timeout=30000) as di:
+                    # If the file opens as navigation, there may be nothing to click here
+                    pass
+                dl = await di.value
+                await dl.save_as(save_path)
+                on_log(f"✓ Archivo descargado (C new-tab): {save_path}")
+                return str(save_path)
+            except PWTimeout:
+                # Fallback inside C: if we *do* have the href, tell the new page to navigate to it
+                if href:
+                    try:
+                        await newp.goto(urljoin(page.url, href), wait_until="domcontentloaded")
+                        async with newp.expect_download(timeout=15000) as di2:
+                            # Many servers trigger download immediately on GET
+                            pass
+                        dl2 = await di2.value
+                        await dl2.save_as(save_path)
+                        on_log(f"✓ Archivo descargado (C2 nav): {save_path}")
+                        return str(save_path)
+                    except Exception as e2:
+                        on_log(f"  [WARN] Mechanism C2 failed: {e2}")
+                # Close the useless tab so we can retry
+                try:
+                    await newp.close()
+                except Exception:
+                    pass
+
+        except PWTimeout:
+            on_log("  [DEBUG] No popup appeared; Mechanism C skipped.")
+        except Exception as e:
+            on_log(f"  [WARN] Mechanism C failed: {e}")
+
+        # If we got here, none worked this round. Try again after a short delay.
+        await asyncio.sleep(6)
+
+    raise PWTimeout(f"Archivo no listo/descargado después de {max_wait_minutes} minutos")
 
 async def scrape_mis_retenciones(
     cuit_login: str,
